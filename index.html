@@ -7,14 +7,14 @@
 <style>
 *{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,sans-serif}
 body{background:#0f172a;color:#e2e8f0;min-height:100vh}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1e293b;position:sticky;top:0;z-index:9}
-.logo{font-weight:900;font-size:1.3rem;color:#4ade80;cursor:pointer}
-.stats{display:flex;gap:12px;align-items:center;font-weight:700}
-#mute{background:none;border:0;font-size:1.2rem;cursor:pointer}
-main{max-width:480px;margin:auto;padding:18px 18px 220px}
-.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tools button{background:#1e293b;border:0;border-radius:16px;padding:14px 6px;color:#e2e8f0;font-size:1.6rem;cursor:pointer;border-bottom:4px solid #334155}
-.tools span{display:block;font-size:.75rem;margin-top:4px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1e293b;position:sticky;top:0;z-index:9;gap:8px}
+.logo{font-weight:900;font-size:1.2rem;color:#4ade80;cursor:pointer}
+.stats{display:flex;gap:10px;align-items:center;font-weight:700;font-size:.9rem}
+#mute{background:none;border:0;font-size:1.1rem;cursor:pointer}
+main{max-width:480px;margin:auto;padding:18px 18px 200px}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tools button{background:#1e293b;border:0;border-radius:14px;padding:12px 4px;color:#e2e8f0;font-size:1.4rem;cursor:pointer;border-bottom:4px solid #334155}
+.tools span{display:block;font-size:.62rem;margin-top:4px}
 .unit{background:#1e293b;border-radius:18px;padding:16px;margin-bottom:22px;border-bottom:5px solid #334155}
 .unit h2{font-size:1.1rem;margin-bottom:12px}
 .row{display:flex;align-items:center;gap:14px;margin:12px 0}
@@ -26,11 +26,11 @@ main{max-width:480px;margin:auto;padding:18px 18px 220px}
 .node.cur{animation:pulse 1.4s infinite}
 .card{background:#1e293b;border-radius:20px;padding:24px;margin:10px 0;border-bottom:5px solid #334155}
 .center{text-align:center}
-.tag{color:#38bdf8;font-weight:800;font-size:.8rem;letter-spacing:1px}
-.txt{font-size:1.02rem;line-height:1.65;margin:14px 0 22px}
-.q{font-size:1.25rem;line-height:1.4;margin-bottom:18px}
+.tag{color:#38bdf8;font-weight:800;font-size:.8rem;letter-spacing:1px;margin-top:4px}
+.txt{font-size:1.02rem;line-height:1.65;margin:12px 0 18px}
+.q{font-size:1.25rem;line-height:1.4;margin-bottom:14px}
 .big{font-size:4rem}
-.btn{display:block;width:100%;padding:14px;border:0;border-radius:14px;background:#22c55e;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 5px 0 #15803d;margin-top:14px}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:14px;background:#22c55e;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 5px 0 #15803d;margin-top:12px}
 .btn:active{transform:translateY(3px);box-shadow:none}
 .btn.alt{background:#475569;box-shadow:0 5px 0 #334155}
 .opt{display:block;width:100%;text-align:left;padding:14px;margin:10px 0;border-radius:14px;border:2px solid #334155;background:#0f172a;color:#e2e8f0;font-size:1rem;cursor:pointer;transition:all .2s}
@@ -44,13 +44,21 @@ main{max-width:480px;margin:auto;padding:18px 18px 220px}
 .fb{position:fixed;left:0;right:0;bottom:0;padding:18px 18px 26px;max-width:480px;margin:auto;border-radius:18px 18px 0 0;animation:up .3s}
 .okb{background:#14532d}
 .badb{background:#7f1d1d}
-.inp{width:100%;padding:14px;border-radius:12px;border:2px solid #334155;background:#0f172a;color:#e2e8f0;font-size:1rem;margin:12px 0}
+.inp{width:100%;padding:14px;border-radius:12px;border:2px solid #334155;background:#0f172a;color:#e2e8f0;font-size:1rem;margin:10px 0}
 .tips{margin:12px 0 0 18px;line-height:1.7}
 .chk{display:flex;gap:10px;align-items:center;margin:12px 0;font-size:1rem}
 .rng{width:100%;margin:10px 0}
 .out{font-family:monospace;font-size:1.15rem;background:#0f172a;padding:16px;border-radius:12px;word-break:break-all;margin:12px 0;min-height:56px}
 .mail{background:#0f172a;padding:14px;border-radius:12px;font-size:.95rem;line-height:1.5;margin:12px 0}
 .mail p{margin:6px 0}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.bd{background:#0f172a;border-radius:12px;padding:10px 4px;text-align:center;font-size:1.8rem;opacity:.3}
+.bd.on{opacity:1;border:2px solid #facc15}
+.bd span{display:block;font-size:.68rem;margin-top:4px}
+.rk{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#0f172a;margin:8px 0;font-weight:600}
+.rk span{flex:1}
+.rk.me{border:2px solid #4ade80}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#facc15;color:#0f172a;padding:10px 16px;border-radius:12px;font-weight:700;z-index:20;animation:pop .4s;white-space:nowrap;font-size:.9rem}
 .pop{animation:pop .4s}
 .slide{animation:slide .35s}
 .shake{animation:shake .4s}
@@ -66,10 +74,11 @@ main{max-width:480px;margin:auto;padding:18px 18px 220px}
 <body>
 <header>
   <span class="logo" onclick="home()">🛡️ CiberRuta</span>
-  <div class="stats"><span>⚡ <b id="xp">0</b></span><span>🔥 <b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
+  <div class="stats"><span>⚡<b id="xp">0</b></span><span>🪙<b id="coins">0</b></span><span>🔥<b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
 </header>
 <main id="app"></main>
 <script src="lessons.js"></script>
+<script src="extra.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
