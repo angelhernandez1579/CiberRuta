@@ -183,7 +183,9 @@ main{padding-bottom:110px}
 .mail{line-height:1.5}
 .abtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:0;border-radius:14px;background:#000;color:#fff;font-weight:700;font-size:1rem;margin-top:10px;cursor:pointer;box-shadow:0 4px 0 #333}
 .abtn:active{transform:translateY(3px);box-shadow:none}
-.frame-fundador .av{box-shadow:0 0 0 4px #f5c542,0 0 22px #f5c542}
+.frame-fundador{position:relative;display:inline-block;margin-top:26px}
+.frame-fundador .av{box-shadow:0 0 0 3px #f5c542}
+.frame-fundador::before{content:"👑";position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:2rem;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));pointer-events:none}
 #nav button{font-size:.62rem;padding:6px 4px}
 #nav button i{font-size:1.3rem}
 #homebtn{background:#334155;border:0;color:#fff;padding:7px 10px;border-radius:10px;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #1e293b}
