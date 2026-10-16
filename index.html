@@ -9,7 +9,16 @@
 <meta name="apple-mobile-web-app-title" content="CiberRuta">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f172a">
-<title>CiberRuta</title>
+<title>CiberRuta · Aprende ciberseguridad jugando</title>
+<meta name="description" content="CiberRuta: aprende ciberseguridad jugando. Lecciones, simulacros, herramientas y ranking.">
+<meta property="og:title" content="CiberRuta">
+<meta property="og:description" content="Aprende ciberseguridad jugando: lecciones, simulacros, herramientas y ranking.">
+<meta property="og:type" content="website">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -243,9 +252,33 @@ button:active,.opt:active,.node:active,.gcard:active,.tools button:active,.hgrid
 .pop{animation:pop .28s var(--ease-out) both}
 /* Latido del nodo actual: más sutil */
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ===== Rediseño: redesign-existing-projects ===== */
+/* 1. Tipografía con carácter (Outfit) y jerarquía más clara */
+html,body,button,input,textarea{font-family:'Outfit',system-ui,-apple-system,sans-serif}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+h1{font-weight:900}
+h2{font-weight:800}
+p,li{text-wrap:pretty}
+.stats b,.rk b,.bd span,.tag,.banner span,.mstats b{font-variant-numeric:tabular-nums}
+.tag{letter-spacing:.08em;font-weight:600}
+/* 2. Fondo con grano: rompe la planitud digital */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+main,header{position:relative;z-index:1}
+/* 3. Estados de foco visibles y enlace para saltar al contenido */
+:focus-visible{outline:3px solid #38bdf8;outline-offset:2px}
+.skip{position:absolute;left:-9999px;top:8px;background:#fff;color:#0f172a;padding:8px 12px;border-radius:8px;z-index:20;font-weight:700}
+.skip:focus{left:8px}
+/* 4. Estados de carga con esqueleto en lugar de texto */
+.sk{height:52px;border-radius:14px;margin:8px 0;background:linear-gradient(90deg,#1e293b 0%,#2b3a52 50%,#1e293b 100%);background-size:200% 100%;animation:shim 1.2s linear infinite}
+@keyframes shim{from{background-position:200% 0}to{background-position:-200% 0}}
+/* 5. Jerarquía: sombras de color, no negras */
+.card{box-shadow:0 10px 30px -12px rgba(2,6,23,.6)}
 </style>
 </head>
 <body>
+<a class="skip" href="#app">Ir al contenido</a>
 <header>
   <span class="logo" onclick="enter()" id="logo"></span>
   <button id="homebtn" onclick="intro()" title="Portada">🏠</button>

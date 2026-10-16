@@ -232,7 +232,7 @@ function judge(){
 
 // ---- Ranking y perfil ----
 async function ranking(){
-  app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2><p class="txt">Cargando...</p></div>`;
+  app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>`;
   const {data:arr,error}=await fetchRanking();
   if(error){
     app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">No se pudo cargar</h2><div class="mail">${error}</div><button class="btn" onclick="ranking()">Reintentar</button><button class="btn alt" onclick="home()">Volver</button></div>`;
