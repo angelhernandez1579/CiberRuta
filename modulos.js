@@ -156,19 +156,133 @@ function instalarCard(){
   return `<div class="card instal"><b>📲 Añade CiberRuta a tu inicio</b><p class="txt" style="margin:8px 0 0">${ios?'En Safari, toca <b>Compartir</b> (cuadro con flecha) y luego <b>Agregar a pantalla de inicio</b>. Así se abre como app, a pantalla completa.':'Abre el menú de tu navegador y elige <b>Instalar aplicación</b> o <b>Agregar a la pantalla de inicio</b>.'}</p></div>`;
 }
 
-// ---- Administración (solo cuentas con is_admin; el servidor también lo verifica) ----
+// ---- Panel de administración (el servidor también verifica is_admin con las reglas de Supabase) ----
+const AD={};
 function admin(){
   if(!P.is_admin)return home();
-  app.innerHTML=`<div class="card pop"><p class="tag">ADMINISTRACIÓN</p><h2 class="q">Marco fundador</h2>
-  <input id="au" class="inp" placeholder="Nombre de usuario" maxlength="16" autocomplete="off">
-  <button class="btn" onclick="fund(true)">⭐ Dar marco fundador</button>
-  <button class="btn alt" onclick="fund(false)">Quitar marco</button>
-  <p id="ae2" class="tag" style="min-height:20px"></p>
-  <button class="btn alt" onclick="hub()">Volver</button></div>`;
+  app.innerHTML=`<div class="card pop"><p class="tag">PANEL DE ADMINISTRACIÓN</p><h2 class="q">Gestión de la comunidad</h2>
+  <div class="atabs">
+    <button class="atab on" onclick="adTab(this,'buscar')">Usuarios</button>
+    <button class="atab" onclick="adTab(this,'stats')">Estadísticas</button>
+    <button class="atab" onclick="adTab(this,'log')">Actividad</button>
+  </div><div id="ad"></div></div>`;
+  adTab(null,'buscar');
 }
-async function fund(on){
-  const u=$('au').value.trim();
-  if(!/^\w{3,16}$/.test(u))return $('ae2').textContent='Usuario inválido';
-  const err=await adminSetFounder(u,on);
-  $('ae2').textContent=err||(on?'✅ Marco otorgado a '+u:'Marco retirado de '+u);
+function adTab(el,t){
+  if(el)document.querySelectorAll('.atab').forEach(b=>b.classList.toggle('on',b===el));
+  if(t==='buscar')return adBuscarUI();
+  if(t==='stats')return adStats();
+  if(t==='log')return adLog();
+}
+async function adLogWrite(accion,objetivo,detalle){
+  await sb.from('admin_log').insert({accion,objetivo,detalle});
+}
+function adBuscarUI(){
+  $('ad').innerHTML=`<div class="edit"><input id="aq" class="inp" placeholder="Buscar por nombre de usuario" maxlength="16" autocomplete="off"><button class="btn" onclick="adBuscar()">Buscar</button></div><div id="ares"></div>`;
+}
+async function adBuscar(){
+  const q=$('aq').value.replace(/\W/g,'');
+  if(!q)return $('ares').innerHTML='<p class="tag">Escribe un nombre.</p>';
+  const {data,error}=await sb.from('perfiles').select('username,xp,coins,marco_fundador,suspendido,is_admin').ilike('username','%'+q+'%').limit(15);
+  if(error)return $('ares').innerHTML=`<div class="mail">${esc(error.message)}</div>`;
+  $('ares').innerHTML=data.length?data.map(u=>`<div class="gcard" onclick="adFicha('${u.username}')"><span class="ic">${u.is_admin?'🛡️':u.suspendido?'⛔':'👤'}</span><div><b>${esc(u.username)}</b><small>${u.xp} XP · 🪙 ${u.coins}${u.marco_fundador?' · 👑':''}</small></div><span>›</span></div>`).join(''):'<p class="tag">Sin resultados.</p>';
+}
+async function adFicha(u){
+  const {data:pf,error}=await sb.from('perfiles').select('*').eq('username',u).maybeSingle();
+  if(error||!pf)return toast('No se encontró el usuario');
+  const {data:pr}=await sb.from('progreso').select('data').eq('id',pf.id).maybeSingle();
+  const d=pr?.data||{},total=U.reduce((a,x)=>a+x.L.length,0);
+  AD.cur=pf;
+  $('ad').innerHTML=`<div class="gcard" style="cursor:default"><span class="ic">👤</span><div>
+    <b>${esc(pf.username)}</b>
+    <small>Nivel ${lvl(pf.xp).l} · ${pf.xp} XP · 🪙 ${pf.coins} · 🔥 ${pf.streak} días</small>
+    <small>Lecciones: ${(d.done||[]).length}/${total} · Simulacros: ${(d.sims||[]).length} · Repasos pendientes: ${(d.review||[]).length}</small>
+    <small>${pf.suspendido?'⛔ Suspendida: '+esc(pf.motivo||'sin motivo'):'Cuenta activa'}${pf.is_admin?' · 🛡️ Administrador':''}</small></div></div>
+  <div class="edit"><label class="tag">Cantidad</label><input id="acant" class="inp" type="number" min="1" max="100000" value="50"></div>
+  <div class="grid2">
+    <button class="btn" onclick="adAjuste('xp',1)">+ XP</button><button class="btn alt" onclick="adAjuste('xp',-1)">− XP</button>
+    <button class="btn" onclick="adAjuste('coins',1)">+ 🪙</button><button class="btn alt" onclick="adAjuste('coins',-1)">− 🪙</button>
+  </div>
+  <button class="btn" onclick="adFundador()">${pf.marco_fundador?'Quitar marco fundador':'⭐ Dar marco fundador'}</button>
+  <h3 class="sub2">Renombrar</h3>
+  <div class="edit"><input id="anom" class="inp" maxlength="16" placeholder="Nuevo nombre de usuario"><button class="btn alt" onclick="adRenombrar()">Cambiar nombre</button></div>
+  <h3 class="sub2">Moderación</h3>
+  ${pf.suspendido
+    ?'<button class="btn" onclick="adSuspender(false)">Reactivar cuenta</button>'
+    :`<div class="edit"><input id="amot" class="inp" maxlength="120" placeholder="Motivo de la suspensión"><button class="btn danger" onclick="adSuspender(true)">Suspender cuenta</button></div>`}
+  <h3 class="sub2">Zona de riesgo</h3>
+  <div class="edit"><input id="areset" class="inp" placeholder="Escribe ${esc(pf.username)} para confirmar"><button class="btn danger" onclick="adReset()">Reiniciar progreso</button></div>
+  <p id="am" class="tag" style="min-height:20px"></p>
+  <button class="btn alt" onclick="adTab(document.querySelector('.atab'),'buscar')">Volver a la búsqueda</button>`;
+}
+async function adAjuste(campo,signo){
+  const n=parseInt($('acant').value,10)||0;
+  if(n<1)return $('am').textContent='Escribe una cantidad válida';
+  const pf=AD.cur,delta=signo*n;
+  const {data:cur,error:e1}=await sb.from('perfiles').select(campo).eq('id',pf.id).single();
+  if(e1)return $('am').textContent='Error: '+e1.message;
+  const nuevo=Math.max(0,(cur[campo]||0)+delta);
+  const {error}=await sb.from('perfiles').update({[campo]:nuevo}).eq('id',pf.id);
+  if(error)return $('am').textContent='Error: '+error.message;
+  await adLogWrite(campo,pf.username,`${delta>0?'+':''}${delta} ${campo==='xp'?'XP':'monedas'} (total ${nuevo})`);
+  AD.cur={...pf,[campo]:nuevo};
+  $('am').textContent=`✅ ${campo==='xp'?'XP':'Monedas'} actualizado: ${nuevo}`;
+}
+async function adFundador(){
+  const pf=AD.cur,on=!pf.marco_fundador;
+  const {error}=await sb.from('perfiles').update({marco_fundador:on}).eq('id',pf.id);
+  if(error)return $('am').textContent='Error: '+error.message;
+  await adLogWrite('marco fundador',pf.username,on?'otorgado':'retirado');
+  adFicha(pf.username);
+}
+async function adRenombrar(){
+  const n=$('anom').value.trim(),pf=AD.cur;
+  if(!/^\w{3,16}$/.test(n))return $('am').textContent='Nombre inválido: 3 a 16 letras, números o _';
+  const {error}=await sb.from('perfiles').update({username:n}).eq('id',pf.id);
+  if(error)return $('am').textContent='Error: '+error.message;
+  await adLogWrite('renombrar',pf.username,'nuevo nombre: '+n);
+  adFicha(n);
+}
+async function adSuspender(on){
+  const pf=AD.cur;
+  if(pf.is_admin)return $('am').textContent='No puedes suspender a otro administrador';
+  const motivo=on?($('amot').value.trim()||'Incumplimiento de los términos'):null;
+  const {error}=await sb.from('perfiles').update({suspendido:on,motivo}).eq('id',pf.id);
+  if(error)return $('am').textContent='Error: '+error.message;
+  await adLogWrite(on?'suspender':'reactivar',pf.username,motivo||'');
+  adFicha(pf.username);
+}
+async function adReset(){
+  const pf=AD.cur;
+  if($('areset').value.trim()!==pf.username)return $('am').textContent='Escribe el nombre exacto para confirmar';
+  const e1=await sb.from('progreso').update({data:{}}).eq('id',pf.id);
+  const e2=await sb.from('perfiles').update({xp:0,coins:0,streak:0,badges_n:0}).eq('id',pf.id);
+  if(e1.error||e2.error)return $('am').textContent='Error al reiniciar el progreso';
+  await adLogWrite('reiniciar progreso',pf.username,'progreso y estadísticas en cero');
+  adFicha(pf.username);
+}
+async function adStats(){
+  $('ad').innerHTML='<div class="sk"></div><div class="sk"></div>';
+  const iso=new Date(Date.now()-7*864e5).toISOString();
+  const c=(f)=>sb.from('perfiles').select('*',{count:'exact',head:true}).match(f||{});
+  const [t,a,s,ad,top]=await Promise.all([
+    c(),
+    sb.from('perfiles').select('*',{count:'exact',head:true}).gte('updated_at',iso),
+    c({suspendido:true}),
+    c({is_admin:true}),
+    sb.from('perfiles').select('username,xp').order('xp',{ascending:false}).limit(5)
+  ]);
+  $('ad').innerHTML=`<div class="grid2">
+    <div class="mcard2"><small>Usuarios</small><b>${t.count||0}</b></div>
+    <div class="mcard2"><small>Activos en 7 días</small><b>${a.count||0}</b></div>
+    <div class="mcard2"><small>Suspendidos</small><b>${s.count||0}</b></div>
+    <div class="mcard2"><small>Administradores</small><b>${ad.count||0}</b></div></div>
+    <h3 class="sub2">Top 5 por XP</h3>
+    ${(top.data||[]).map((u,i)=>`<div class="rk"><b>#${i+1}</b><span>${esc(u.username)}</span><span>${u.xp} XP</span></div>`).join('')}`;
+}
+async function adLog(){
+  $('ad').innerHTML='<div class="sk"></div><div class="sk"></div>';
+  const {data,error}=await sb.from('admin_log').select('*').order('creado',{ascending:false}).limit(30);
+  if(error)return $('ad').innerHTML=`<div class="mail">${esc(error.message)}</div>`;
+  $('ad').innerHTML=(data||[]).map(r=>`<div class="rk"><span style="flex:none;font-size:.72rem;color:#94a3b8">${new Date(r.creado).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'})}</span><span>${esc(r.accion)} · <b>${esc(r.objetivo||'')}</b><small class="ttl">${esc(r.detalle||'')}</small></span></div>`).join('')||'<p class="tag">Sin actividad todavía.</p>';
 }

@@ -94,7 +94,12 @@ async function doAuth(){
   if(r.error){FAILS++;return err(r.error)}
   FAILS=0;
   if(r.needsConfirm)return err('Revisa tu correo para confirmar la cuenta y luego entra.');
-  P=await loadProfile();ME=P.username;home();
+  P=await loadProfile();ME=P.username;if(P.suspendido)return suspendidoMsg();home();
+}
+async function suspendidoMsg(){
+  const m=P.motivo||'Incumplimiento de los términos';
+  await signOut();P=null;ME=null;auth();
+  $('ae').textContent='Cuenta suspendida: '+m;
 }
 async function logout(){await signOut();ME=null;P=null;authMode='login';intro()}
 
@@ -292,6 +297,6 @@ function equipFund(){P.equip=P.equip==='fundador'?'':'fundador';save();profile()
 async function boot(){
   localStorage.removeItem('cr_users');localStorage.removeItem('cr_session');
   await sessionReady;
-  if(sbUser){P=await loadProfile();ME=P.username;home()}else intro();
+  if(sbUser){P=await loadProfile();ME=P.username;if(P.suspendido)return suspendidoMsg();home()}else intro();
 }
 window.addEventListener('load',boot);

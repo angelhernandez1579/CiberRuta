@@ -34,7 +34,7 @@ async function loadProfile(){
     }
     return newP(base);
   }
-  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak,avatar:pf.avatar_url,is_admin:pf.is_admin,marco_fundador:pf.marco_fundador};
+  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak,avatar:pf.avatar_url,is_admin:pf.is_admin,marco_fundador:pf.marco_fundador,suspendido:pf.suspendido,motivo:pf.motivo};
 }
 async function signUp(email,password,username){
   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
