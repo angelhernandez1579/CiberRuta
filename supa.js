@@ -69,7 +69,7 @@ async function saveNow(){
 async function fetchRanking(){
   if(rankCache.d&&Date.now()-rankCache.t<60000)return rankCache.d;
   await sessionReady;
-  const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url,marco_fundador").order("xp",{ascending:false}).limit(50)
+  const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url,marco_fundador,streak").order("xp",{ascending:false}).limit(50)
     .then(({data,error})=>({data:data||[],error:error?error.message:null}));
   const t=new Promise(r=>setTimeout(()=>r({data:null,error:"La consulta no respondió en 8 segundos. Revisa la conexión y recarga la página."}),8000));
   const res=await Promise.race([q,t]);

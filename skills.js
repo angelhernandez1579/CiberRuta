@@ -46,7 +46,7 @@ function missionsDone(){return dailyIds().filter(dayDone).length}
 function markDaily(id){
   if(!P.daily||P.daily.day!==hoy())P.daily={day:hoy(),done:[]};
   if(P.daily.done.includes(id)||!dailyIds().includes(id))return;
-  P.daily.done.push(id);addXP(15,5);toast('🎯 Misión lista +15 XP +5 🪙');
+  P.daily.done.push(id);addXP(15,5);MOOD='happy';toast('🎯 Misión lista +15 XP +5 🪙');
   if(dailyIds().every(x=>P.daily.done.includes(x))){addXP(20,0);toast('🏆 Misiones del día completas +20 XP')}
   save();
 }
@@ -252,6 +252,7 @@ function rvAns(i){
   const {x,q}=RV,ok=i===q[2];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('good');else if(j===i)b.classList.add('bad')});
   if(ok){P.review=P.review.filter(y=>y!==x);addXP(5,2);SFX.ok()}else{x.due=Date.now()+864e5;SFX.bad()}
+  MOOD=ok?'happy':'thinking';
   save();
   $('fb').innerHTML=`<div class="mail"><b>${ok?'¡Bien! La dominas':'La volveremos a ver mañana'}</b><p>${q[3]}</p></div><button class="btn" onclick="rvNext()">Siguiente</button>`;
 }

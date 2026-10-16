@@ -10,7 +10,12 @@ const TITLES=['Novato','Explorador','Protector','Guardián','Defensor','Experto'
 const TIPS=["Una frase larga es más segura que una contraseña corta con símbolos.","Nunca compartas un código de verificación, ni con soporte.","Pasa el cursor sobre un enlace antes de hacer clic.","Activa la autenticación en dos pasos en tu correo primero.","Actualiza tu equipo: muchas brechas usan fallos ya corregidos."];
 const COMMON=['123456','password','qwerty','111111','12345678','abc123','letmein','admin','iloveyou','contraseña'];
 const LOGO=`<svg viewBox="0 0 64 64" width="34" height="34"><path d="M32 4 L56 14 V32 C56 46 46 56 32 60 C18 56 8 46 8 32 V14 Z" fill="#22c55e"/><path d="M22 32 l7 7 l13-14" stroke="#0f172a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const MASC=(s=110,cls='bob')=>`<svg viewBox="0 0 120 130" width="${s}" class="${cls}"><ellipse cx="60" cy="126" rx="34" ry="5" fill="#000" opacity=".3"/><path d="M60 8 L104 24 V62 C104 92 84 112 60 120 C36 112 16 92 16 62 V24 Z" fill="#38bdf8"/><circle cx="44" cy="58" r="7" fill="#0f172a"/><circle cx="76" cy="58" r="7" fill="#0f172a"/><circle cx="46" cy="56" r="2" fill="#fff"/><circle cx="78" cy="56" r="2" fill="#fff"/><path d="M42 80 Q60 96 78 80" stroke="#0f172a" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="34" cy="74" r="5" fill="#f9a8d4"/><circle cx="86" cy="74" r="5" fill="#f9a8d4"/></svg>`;
+let MOOD='happy';
+function mouth(m){
+  const d=m==='thinking'?'M48 86 L72 86':m==='sad'?'M42 90 Q60 74 78 90':'M42 80 Q60 96 78 80';
+  return `<path d="${d}" stroke="#0f172a" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+}
+const MASC=(s=110,cls='bob',mood=MOOD)=>`<svg viewBox="0 0 120 130" width="${s}" class="${cls}"><ellipse cx="60" cy="126" rx="34" ry="5" fill="#000" opacity=".3"/><path d="M60 8 L104 24 V62 C104 92 84 112 60 120 C36 112 16 92 16 62 V24 Z" fill="#38bdf8"/><circle cx="44" cy="58" r="7" fill="#0f172a"/><circle cx="76" cy="58" r="7" fill="#0f172a"/><circle cx="46" cy="56" r="2" fill="#fff"/><circle cx="78" cy="56" r="2" fill="#fff"/>${mouth(mood)}<circle cx="34" cy="74" r="5" fill="#f9a8d4"/><circle cx="86" cy="74" r="5" fill="#f9a8d4"/></svg>`;
 let ctx,muted=false,cur,qi,correct,pg=0,authMode='login',D={m:null,ok:0,n:0};
 
 // ---- Sonido ----
@@ -115,7 +120,7 @@ function ask(){
 function answer(i){
   const q=cur.q[qi],ok=i===q[2];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('good');else if(j===i)b.classList.add('bad')});
-  if(ok){correct++;SFX.ok()}else{SFX.bad();document.querySelector('.card').classList.add('shake')}if(!ok)addReview(cur.id,qi);
+  if(ok){correct++;SFX.ok()}else{SFX.bad();document.querySelector('.card').classList.add('shake')}if(!ok)addReview(cur.id,qi);MOOD=ok?'happy':'thinking';
   $('fb').innerHTML=`<div class="fb ${ok?'okb':'badb'}"><b>${ok?'¡Correcto! ✅':'Incorrecto ❌'}</b><p style="margin:6px 0 4px">${q[3]}</p><button class="btn" onclick="next()">Continuar</button></div>`;
 }
 function next(){qi++;qi<cur.q.length?ask():finish()}
@@ -126,7 +131,7 @@ function finish(){
   touchStreak();award('first');
   if(correct===n)award('perfect');
   if(U[ui].L.every((_,k)=>P.done.includes(ui+'.'+k))&&!P.badges.includes('unit')){award('unit');addXP(40,50);toast('🎁 Cofre de unidad: +40 XP +50 🪙')}
-  save();SFX.win();burst();
+  MOOD='happy';save();SFX.win();burst();
   app.innerHTML=`<div class="card pop center"><div class="big">🏆</div><h2 class="q">¡Lección completada!</h2><p class="txt">Correctas: ${correct}/${n}<br>Recompensa: +${gx} XP y +${gc} 🪙 ${gx?'':'(ya la habías completado)'}</p>${MASC(90)}<button class="btn" onclick="home()">Continuar en el mapa</button></div>`;
 }
 function burst(){
@@ -239,10 +244,14 @@ async function ranking(){
     return;
   }
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
-  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.marco_fundador?"👑 ":""}${esc(u.username)}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarBadge(avatarHTML(u.avatar_url,32,u.username),u.streak,'sm')}<span>${u.marco_fundador?"👑 ":""}${esc(u.username)}<small class="ttl">${lvl(u.xp).title}</small></span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 const GOOGLE_G=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7-10 7-17.5z"/><path fill="#FBBC05" d="M10.4 28.8c-.5-1.5-.8-3-.8-4.8s.3-3.3.8-4.8l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.9l-7.8 6C6.5 42.6 14.6 48 24 48z"/></svg>`;
+function avatarBadge(html,streak,size){
+  if(!streak)return html;
+  return `<span class="avw">${html}<span class="fire ${size==='sm'?'fire-sm':''}">🔥${streak}</span></span>`;
+}
 function avatarHTML(url,size=72,name=''){
   const st=`width:${size}px;height:${size}px`,u=safeUrl(url);
   return u?`<img src="${u}" class="av" style="${st}" alt="" referrerpolicy="no-referrer">`:`<div class="av ph" style="${st}">${esc((name||'?')[0].toUpperCase())}</div>`;
@@ -250,7 +259,7 @@ function avatarHTML(url,size=72,name=''){
 function profile(){
   const L=lvl(P.xp);
   app.innerHTML=`<div class="card pop center">
-    <div class="frame-${P.equip||'none'}">${avatarHTML(P.avatar,96,P.username)}</div>
+    <div class="frame-${P.equip||'none'}">${avatarBadge(avatarHTML(P.avatar,96,P.username),P.streak)}</div>
     <h2 class="q" style="margin:12px 0 4px">${esc(P.username)}</h2>
     <p class="txt" style="margin:4px 0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
     <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
