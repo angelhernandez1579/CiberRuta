@@ -74,7 +74,7 @@ function auth(){
   <input id="up" class="inp" type="password" placeholder="Contraseña (mín. 6)" autocomplete="current-password">
   <p id="ae" style="color:#f87171;min-height:22px;margin-top:6px"></p>
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
-  <button class="btn alt" onclick="signGoogle()">Continuar con Google</button>
+  <button class="gbtn" onclick="signGoogle()">${GOOGLE_G}<span>Continuar con Google</span></button>
   <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button>
   <button class="btn alt" onclick="intro()">← Volver a la portada</button></div>`;
 }
@@ -234,19 +234,42 @@ async function ranking(){
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2><p class="txt">Cargando...</p></div>`;
   const arr=await fetchRanking();
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
-  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b><span>${u.username}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.username}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
+}
+const GOOGLE_G=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7-10 7-17.5z"/><path fill="#FBBC05" d="M10.4 28.8c-.5-1.5-.8-3-.8-4.8s.3-3.3.8-4.8l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.9l-7.8 6C6.5 42.6 14.6 48 24 48z"/></svg>`;
+function avatarHTML(url,size=72,name=''){
+  const st=`width:${size}px;height:${size}px`;
+  return url?`<img src="${url}" class="av" style="${st}" alt="">`:`<div class="av ph" style="${st}">${(name||'?')[0].toUpperCase()}</div>`;
 }
 function profile(){
   const L=lvl(P.xp);
-  app.innerHTML=`<div class="card pop"><p class="tag">PERFIL</p><h2 class="q">${ME}</h2>
-  <div class="lvlc">${MASC(70,'float')}<div><p class="txt" style="margin:0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
-  <div class="bar"><div style="width:${L.cur/L.need*100}%"></div></div></div></div>
-  <h3 style="margin:16px 0 8px">Logros</h3><div class="badges">
-  ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
-  <button class="btn" onclick="home()">Volver</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
+  app.innerHTML=`<div class="card pop center">
+    ${avatarHTML(P.avatar,96,P.username)}
+    <h2 class="q" style="margin:12px 0 4px">${P.username}</h2>
+    <p class="txt" style="margin:4px 0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
+    <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
+    <div class="edit"><input id="nn" class="inp" maxlength="16" placeholder="Nuevo nombre de usuario"><button class="btn" onclick="renameUser()">Guardar nombre</button></div>
+    <p id="pe" class="tag" style="min-height:20px"></p>
+    <h3 style="margin:14px 0 8px;text-align:left">Logros</h3><div class="badges">
+    ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
+    <button class="btn" onclick="home()">Volver</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
-
+async function renameUser(){
+  const n=$('nn').value.trim();
+  if(!/^\w{3,16}$/.test(n))return $('pe').textContent='Usa de 3 a 16 letras, números o _';
+  $('pe').textContent='Guardando...';
+  const err=await updateUsername(n);
+  if(err)return $('pe').textContent=err;
+  P.username=n;ME=n;SFX.ok();toast('✅ Nombre actualizado');profile();
+}
+async function changePhoto(inp){
+  const f=inp.files[0];if(!f)return;
+  $('pe').textContent='Subiendo foto...';
+  const r=await uploadAvatar(f);
+  if(r.error)return $('pe').textContent='Error al subir: '+r.error;
+  P.avatar=r.url;SFX.ok();toast('📷 Foto actualizada');profile();
+}
 async function boot(){
   await sessionReady;
   if(sbUser){P=await loadProfile();ME=P.username}

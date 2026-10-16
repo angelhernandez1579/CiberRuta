@@ -19,7 +19,7 @@ async function loadProfile(){
     }
     return newP(base);
   }
-  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak};
+  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak,avatar:pf.avatar_url};
 }
 async function signUp(email,password,username){
   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
@@ -52,6 +52,35 @@ async function saveNow(){
   await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount}});
 }
 async function fetchRanking(){
-  const {data}=await sb.from("perfiles").select("username,xp,badges_n").order("xp",{ascending:false}).limit(50);
+  const {data}=await sb.from("perfiles").select("username,xp,badges_n,avatar_url").order("xp",{ascending:false}).limit(50);
   return data||[];
+}
+
+async function updateUsername(name){
+  const {error}=await sb.from("perfiles").update({username:name,updated_at:new Date().toISOString()}).eq("id",sbUser.id);
+  if(error)return/duplicate|unique/i.test(error.message)?"Ese nombre ya está en uso":"No se pudo cambiar el nombre";
+  return null;
+}
+function resizeImg(file){
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement("canvas");c.width=c.height=256;
+      const s=Math.min(img.width,img.height);
+      c.getContext("2d").drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,256,256);
+      c.toBlob(b=>b?res(b):rej(new Error("No se pudo procesar la imagen")),"image/jpeg",.9);
+    };
+    img.onerror=()=>rej(new Error("Archivo de imagen no válido"));
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function uploadAvatar(file){
+  const blob=await resizeImg(file);
+  const path=sbUser.id+"/avatar.jpg";
+  const {error}=await sb.storage.from("avatares").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
+  if(error)return{error:error.message};
+  const url=sb.storage.from("avatares").getPublicUrl(path).data.publicUrl+"?t="+Date.now();
+  const {error:e2}=await sb.from("perfiles").update({avatar_url:url}).eq("id",sbUser.id);
+  if(e2)return{error:e2.message};
+  return{url};
 }
