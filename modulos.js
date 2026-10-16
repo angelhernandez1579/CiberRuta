@@ -108,3 +108,35 @@ function emergencia(){
   <p class="tag" style="margin-top:10px">Verifica los números en fuentes oficiales antes de una emergencia, porque pueden cambiar.</p>
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
+
+// ---- Navegación inferior y ruta ----
+function go(el,f){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b===el));f()}
+new MutationObserver(()=>{$('nav').style.display=(P&&!app.querySelector('.hero'))?'flex':'none'}).observe(app,{childList:true});
+function home(){
+  if(!P)return auth();
+  const today=new Date().toDateString();
+  if(P.bonusDay!==today){P.bonusDay=today;addXP(20,10);toast('🎁 Bonificación diaria +20 XP +10 🪙');save()}
+  stats();
+  const L=lvl(P.xp),nxt=ALL.find(a=>!P.done.includes(a.id))||ALL[ALL.length-1],nl=U[nxt.ui].L[nxt.li];
+  let h=`<div class="card lvlc" style="margin-top:0">${MASC(64,'wave')}<div style="flex:1"><p class="tag">NIVEL ${L.l} · ${L.title}</p>
+    <div class="bar"><div style="width:${L.cur/L.need*100}%"></div></div><p class="txt" style="margin:6px 0 0;font-size:.8rem">${L.cur}/${L.need} XP</p></div></div>
+    <div class="banner" onclick="lesson(${nxt.ui},${nxt.li})"><div><small>MÓDULO ${nxt.ui+1} · LECCIÓN ${nxt.li+1}</small><b>${nl.t}</b></div><span>▶</span></div>`;
+  let k=0;
+  U.forEach((u,ui)=>{
+    const dn=u.L.filter((_,li)=>P.done.includes(ui+'.'+li)).length,pct=dn/u.L.length;
+    h+=`<div class="mod" style="--c:${u.c}"><svg class="ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" class="rbg"/><circle cx="22" cy="22" r="18" class="rfg" style="stroke-dasharray:${(pct*113).toFixed(1)} 113"/></svg><div><small>MÓDULO ${ui+1}</small><b>${u.n}</b></div><span>${dn}/${u.L.length}</span></div><div class="path">`;
+    u.L.forEach((l,li)=>{
+      const i=ALL.findIndex(x=>x.ui===ui&&x.li===li),id=ui+'.'+li;
+      const done=P.done.includes(id),open=i===0||P.done.includes(ALL[i-1].id);
+      const off=[0,-45,-65,-45,0,45,65,45][k%8];k++;
+      h+=`<div class="pn" style="transform:translateX(${off}px)"><button class="node ${done?'done':open?'cur':'lock'}" ${open?'':'disabled'} onclick="lesson(${ui},${li})">${done?'✔':open?'★':'🔒'}</button><small>${l.t}</small></div>`;
+      if(k%3===0)h+=`<div class="mas">${MASC(64,'bob')}<div class="tip">💡 ${TIPS[k%TIPS.length]}</div></div>`;
+    });
+    h+='</div>';
+  });
+  app.innerHTML=h;
+}
+function hub(){
+  app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()']].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+}

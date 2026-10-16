@@ -90,36 +90,6 @@ async function doAuth(){
 function logout(){localStorage.removeItem('cr_session');ME=null;P=null;authMode='login';intro()}
 
 // ---- Inicio (mapa) ----
-function home(){
-  if(!P)return auth();
-  const today=new Date().toDateString();
-  if(P.bonusDay!==today){P.bonusDay=today;addXP(20,10);toast('🎁 Bonificación diaria +20 XP +10 🪙');save()}
-  stats();
-  const L=lvl(P.xp),tip=TIPS[new Date().getDate()%TIPS.length];
-  let h=`<div class="card lvlc">${MASC(70,'wave')}<div style="flex:1"><p class="tag">NIVEL ${L.l} · ${L.title}</p>
-    <div class="bar"><div style="width:${L.cur/L.need*100}%"></div></div>
-    <p class="txt" style="margin:6px 0 0;font-size:.82rem">${L.cur}/${L.need} XP</p></div></div>
-    <div class="tip">💡 ${tip}</div>
-    <div class="tools" style="margin-top:14px">
-    <button onclick="checker()">🔍<span>Verificador</span></button>
-    <button onclick="generator()">🎲<span>Generador</span></button>
-    <button onclick="detector()">🎣<span>Phishing</span></button>
-    <button onclick="ranking()">🏆<span>Ranking</span></button>
-    <button onclick="profile()">👤<span>Perfil</span></button></div><div class="tools" style="margin-top:8px"><button onclick="guias()">📘<span>Guías</span></button><button onclick="mapa()">🌍<span>Mapa</span></button><button onclick="noticias()">📰<span>Noticias</span></button><button style="background:#7f1d1d" onclick="emergencia()">🆘<span>Emergencia</span></button></div>
-    <h1 class="center" style="margin:18px 0 16px">Tu ruta de ciberseguridad</h1>`;
-  U.forEach((u,ui)=>{
-    h+=`<section class="unit" style="border-color:${u.c}"><h2 style="color:${u.c}">${u.n}</h2>`;
-    u.L.forEach((l,li)=>{
-      const i=ALL.findIndex(x=>x.ui===ui&&x.li===li),id=ui+'.'+li;
-      const done=P.done.includes(id),open=i===0||P.done.includes(ALL[i-1].id);
-      const cls=done?'done':open?'cur':'lock';
-      h+=`<div class="row" style="margin-left:${li%2?'36px':'0'}"><button class="node ${cls}" ${open?'':'disabled'} onclick="lesson(${ui},${li})">${done?'✔':open?'★':'🔒'}</button><span>${l.t}</span></div>`;
-    });
-    h+='</section>';
-  });
-  app.innerHTML=h;
-}
-
 // ---- Lecciones paginadas: teoría (2 páginas) y luego práctica ----
 function lesson(ui,li){cur=U[ui].L[li];cur.id=ui+'.'+li;pg=0;SFX.click();showPg()}
 function showPg(){
