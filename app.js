@@ -43,7 +43,7 @@ async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncod
 // ---- Portada ----
 function enter(){P?home():auth()}
 function intro(){
-  app.innerHTML=`<section class="hero"><div class="float">${MASC(150)}</div>
+  app.innerHTML=`${instalarCard()}<section class="hero"><div class="float">${MASC(150)}</div>
   <h1>CiberRuta</h1><p class="sub">Aprende a protegerte en el mundo digital, jugando.</p>
   <button class="btn" id="start">Empezar ▶</button>
   <button class="btn alt" onclick="document.getElementById('que').scrollIntoView({behavior:'smooth'})">Conocer el proyecto</button></section>
@@ -57,9 +57,7 @@ function intro(){
   <div class="ods"><b>ODS 4 · Educación de calidad (principal)</b><br>Meta 4.4: aumentar las competencias digitales para el empleo y la ciudadanía.</div>
   <div class="ods"><b>ODS 9 · Industria, innovación e infraestructura</b><br>Fomenta la adopción segura e informada de la tecnología digital.</div>
   <div class="ods"><b>ODS 16 · Paz, justicia e instituciones sólidas</b><br>Reduce el riesgo de cibercrimen y fortalece la confianza en el entorno digital.</div></section>
-  <footer class="ft"><p class="tag">Democratizando la educación en ciberseguridad mediante juegos, comunidad y buenas prácticas, alineados a los Objetivos de Desarrollo Sostenible de la ONU.</p>
-  <div class="fcols"><div><b>Plataforma</b><a href="#" onclick="enter();return false">Aprendizaje</a><a href="#" onclick="enter();return false">Herramientas</a><a href="#" onclick="enter();return false">Ranking</a></div>
-  <div><b>Legal & contacto</b><a href="#">Aviso de Privacidad</a><a href="#">Términos de Servicio</a><a href="mailto:contacto@ciberruta.example">contacto@ciberruta.example</a></div></div></footer>`;
+  ${footerHTML()}`;
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
   document.querySelectorAll('.rv').forEach(el=>io.observe(el));
   $('start').addEventListener('click',()=>{window.scrollTo(0,0);P?home():auth()});
@@ -75,9 +73,9 @@ function auth(){
   <p id="ae" style="color:#f87171;min-height:22px;margin-top:6px"></p>
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
   <button class="gbtn" onclick="signGoogle()">${GOOGLE_G}<span>Continuar con Google</span></button>
+  <p class="tag" style="text-transform:none;letter-spacing:0;font-weight:400;color:#94a3b8;margin-top:6px">El acceso con Google es solo para cuentas del dominio .udg.mx</p>
   <button class="abtn" onclick="signApple()">${APPLE_L}<span>Continuar con Apple</span></button>
-  <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button>
-  <button class="btn alt" onclick="intro()">← Volver a la portada</button></div>`;
+  <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button></div>`;
 }
 let FAILS=0;
 async function doAuth(){
@@ -262,7 +260,7 @@ function profile(){
     <p id="pe" class="tag" style="min-height:20px"></p>
     <h3 style="margin:14px 0 8px;text-align:left">Logros</h3><div class="badges">
     ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
-    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<button class="btn alt" onclick="intro()">🏠 Ir a la portada</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
+    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 async function renameUser(){
   if(!cool('rename',10000))return $('pe').textContent='Espera unos segundos antes de cambiarlo otra vez';

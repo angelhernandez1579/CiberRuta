@@ -179,12 +179,15 @@ main{padding-bottom:110px}
 .frame-fundador .av{box-shadow:0 0 0 4px #f5c542,0 0 22px #f5c542}
 #nav button{font-size:.62rem;padding:6px 4px}
 #nav button i{font-size:1.3rem}
+#homebtn{background:#334155;border:0;color:#fff;padding:7px 10px;border-radius:10px;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #1e293b}
+.instal{border-left:5px solid #38bdf8;margin-top:0}
 </style>
 </head>
 <body>
 <header>
   <span class="logo" onclick="enter()" id="logo"></span>
   <button id="back" onclick="home()">← Ruta</button>
+  <button id="homebtn" onclick="intro()" title="Portada">🏠</button>
   <div class="stats"><span>⚡<b id="xp">0</b></span><span>🪙<b id="coins">0</b></span><span>🔥<b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
 </header>
 <main id="app"></main>
