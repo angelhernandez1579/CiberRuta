@@ -1,0 +1,110 @@
+// ---- Guías prácticas para iPhone ----
+const GUIAS=[
+{id:"vpn",t:"VPN",i:"🛡️",que:"Una VPN crea un túnel cifrado entre tu iPhone y un servidor. Cifra tu tráfico en redes Wi-Fi públicas y oculta tu IP ante los sitios que visitas. Ojo: una VPN cambia a quién confías tus datos; no te vuelve anónimo.",pasos:["Elige un proveedor con buena reputación y descarga su app desde la App Store.","Abre la app, crea tu cuenta y acepta el perfil de VPN cuando iOS lo pida.","Ve a Ajustes > General > VPN y gestión de dispositivos y confirma que aparece registrada.","Activa el interruptor de la VPN desde la app o desde Ajustes > VPN.","Verifica que el icono de VPN aparece arriba en la barra de estado."]},
+{id:"relay",t:"Relé privado",i:"🔒",que:"Relé privado de iCloud envía tu tráfico de Safari a través de dos servidores, así que ni tu proveedor ni el sitio ven tu IP real. Requiere un plan de iCloud+. Algunos sitios o redes pueden bloquearlo.",pasos:["Abre Ajustes y toca tu nombre, en la parte superior.","Entra a iCloud y después a Relé privado.","Activa el interruptor Relé privado.","Elige Mantener la ubicación general si quieres que los sitios vean tu región y no tu ubicación exacta."]},
+{id:"limit",t:"Limitar rastreo de IP",i:"🚫",que:"Esta opción evita que los rastreadores usen tu dirección IP para relacionar tu actividad y ubicarte con precisión. Se configura por red Wi-Fi, así que conviene activarla en las redes que frecuentas.",pasos:["Abre Ajustes y entra a Wi-Fi.","Toca el símbolo (i) junto a la red que usas.","Activa la opción Limitar rastreo de IP.","Repite el proceso en tu red de casa y en tu trabajo."]},
+{id:"rot",t:"IP rotatoria y MAC privada",i:"🔄",que:"iOS no tiene un interruptor llamado IP rotatoria. Lo más parecido es Relé privado, que cambia tu IP al navegar en Safari, y la Dirección Wi-Fi privada, que cambia tu dirección MAC en cada red para que no te sigan entre lugares.",pasos:["Abre Ajustes, entra a Wi-Fi y toca el (i) de tu red.","Activa Dirección Wi-Fi privada.","Si una red pide registrar tu dispositivo, puede que necesites usar la dirección fija solo para esa red."]}
+];
+function guias(){
+  if(!P.guides)P.guides={};
+  app.innerHTML=`<div class="card pop"><p class="tag">GUÍAS · iPHONE</p><h2 class="q">Protege tu iPhone paso a paso</h2>
+  ${GUIAS.map(g=>{const d=(P.guides[g.id]||[]).length;return `<div class="gcard" onclick="guia('${g.id}')"><span class="ic">${g.i}</span><div><b>${g.t}</b><div class="bar"><div style="width:${d/g.pasos.length*100}%"></div></div></div><span>${d}/${g.pasos.length}</span></div>`}).join('')}
+  <button class="btn alt" onclick="home()">Volver</button></div>`;
+}
+function guia(id){
+  if(!P.guides)P.guides={};
+  const g=GUIAS.find(x=>x.id===id),done=P.guides[id]||[];
+  app.innerHTML=`<div class="card pop"><p class="tag">${g.i} ${g.t}</p><h2 class="q">¿Qué es?</h2><p class="txt">${g.que}</p>
+  <h3 class="sub2">Cómo activarlo</h3>
+  ${g.pasos.map((s,i)=>`<label class="chk"><input type="checkbox" ${done.includes(i)?'checked':''} onchange="mark('${id}',${i},this.checked)"><span>${s}</span></label>`).join('')}
+  <button class="btn alt" onclick="guias()">Volver a guías</button></div>`;
+}
+function mark(id,i,on){
+  const arr=P.guides[id]||[];
+  if(on&&!arr.includes(i)){arr.push(i);SFX.ok()}
+  if(!on){const k=arr.indexOf(i);if(k>=0)arr.splice(k,1)}
+  P.guides[id]=arr;
+  const g=GUIAS.find(x=>x.id===id);
+  if(arr.length===g.pasos.length&&!P.guides['x_'+id]){P.guides['x_'+id]=true;addXP(15,10);toast('✅ Guía completada: '+g.t+' +15 XP +10 🪙')}
+  save();
+}
+
+// ---- Verificador de filtraciones (k-anonymity: solo se envían 5 caracteres del hash SHA-1) ----
+async function pwnedCount(pw){
+  const b=await crypto.subtle.digest('SHA-1',new TextEncoder().encode(pw));
+  const hex=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();
+  const r=await fetch('https://api.pwnedpasswords.com/range/'+hex.slice(0,5));
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const line=(await r.text()).split('\n').find(l=>l.split(':')[0].trim()===hex.slice(5));
+  return line?parseInt(line.split(':')[1]):0;
+}
+function breach(){
+  const v=$('pw').value;if(!v)return;
+  $('pbr').textContent='Consultando filtraciones...';
+  pwnedCount(v).then(n=>{
+    $('pbr').innerHTML=n?`⚠️ Aparece <b>${n.toLocaleString('es-MX')}</b> veces en filtraciones conocidas. Cámbiala ya.`:'✅ No aparece en las filtraciones conocidas. Aun así, usa una contraseña única para cada cuenta.';
+    SFX[n?'bad':'ok']();
+  }).catch(e=>$('pbr').textContent='No se pudo consultar ('+e.message+'). Revisa tu conexión.');
+}
+
+// ---- Mapa de ataques (simulado) ----
+const CITIES=[[19.4,-99.1,'CDMX'],[40.7,-74,'Nueva York'],[51.5,-0.1,'Londres'],[35.7,139.7,'Tokio'],[-23.5,-46.6,'São Paulo'],[28.6,77.2,'Delhi'],[-33.9,151.2,'Sídney'],[55.7,37.6,'Moscú'],[6.5,3.4,'Lagos'],[1.3,103.8,'Singapur'],[37.6,-122.4,'San Francisco'],[-1.3,36.8,'Nairobi']];
+function mapa(){
+  app.innerHTML=`<div class="card pop"><p class="tag">MAPA · SIMULADO</p><h2 class="q">Ataques en tiempo real</h2>
+  <canvas id="map" width="460" height="230"></canvas>
+  <div class="mstats"><span>🔴 <b id="cnt">0</b> intentos</span><span>Último: <b id="top">—</b></span></div>
+  <p class="txt" style="font-size:.85rem">Visualización ilustrativa con datos simulados. Para datos reales, consulta los mapas públicos de proveedores de seguridad.</p>
+  <button class="btn alt" onclick="home()">Volver</button></div>`;
+  const c=$('map'),x=c.getContext('2d'),W=c.width,H=c.height,arcs=[];
+  let n=0;
+  const pr=(la,lo)=>[(lo+180)/360*W,(90-la)/180*H];
+  function frame(){
+    if(!$('map'))return;
+    x.fillStyle='#0b1324';x.fillRect(0,0,W,H);
+    x.strokeStyle='#1e3a5f';x.lineWidth=1;
+    for(let g=-60;g<=60;g+=30){const y=pr(g,0)[1];x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.stroke()}
+    for(let g=-150;g<=150;g+=30){const q=pr(0,g)[0];x.beginPath();x.moveTo(q,0);x.lineTo(q,H);x.stroke()}
+    if(Math.random()<.08){const a=R(CITIES),b=R(CITIES);if(a!==b){arcs.push({a,b,t:0,c:R(['#f87171','#facc15','#4ade80'])});n++;$('cnt').textContent=n;$('top').textContent=b[2]}}
+    CITIES.forEach(([la,lo,nm])=>{const[px,py]=pr(la,lo);x.fillStyle='#38bdf8';x.beginPath();x.arc(px,py,2.5,0,7);x.fill()});
+    for(let i=arcs.length-1;i>=0;i--){
+      const A=arcs[i];A.t+=.012;
+      const[x1,y1]=pr(A.a[0],A.a[1]),[x2,y2]=pr(A.b[0],A.b[1]);
+      const mx=(x1+x2)/2,my=Math.min(y1,y2)-45,t=Math.min(A.t,1);
+      const px=(1-t)*(1-t)*x1+2*(1-t)*t*mx+t*t*x2,py=(1-t)*(1-t)*y1+2*(1-t)*t*my+t*t*y2;
+      x.strokeStyle=A.c;x.lineWidth=1.5;x.beginPath();x.moveTo(x1,y1);x.quadraticCurveTo(mx,my,px,py);x.stroke();
+      x.fillStyle=A.c;x.beginPath();x.arc(px,py,3.5,0,7);x.fill();
+      if(A.t>1.3)arcs.splice(i,1);
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ---- Noticias del día (edita este bloque cada día) ----
+const NEWS={fecha:"Actualiza la fecha",items:[
+{t:"Reemplaza este texto con la noticia de ciberseguridad del día.",f:"Fuente oficial",u:"https://www.gob.mx"},
+{t:"Agrega aquí una noticia sobre campañas de phishing recientes.",f:"Fuente oficial",u:"https://www.gob.mx"},
+{t:"Agrega una tercera noticia sobre protección de datos personales.",f:"Fuente oficial",u:"https://www.gob.mx"}]};
+function noticias(){
+  app.innerHTML=`<div class="card pop"><p class="tag">NOTICIAS · ${NEWS.fecha}</p><h2 class="q">Ciberseguridad hoy</h2>
+  ${NEWS.items.map((n,i)=>`<div class="nw" style="animation-delay:${i*.15}s"><p>${n.t}</p><small>${n.f} · <a href="${n.u}" target="_blank" rel="noopener">Leer</a></small></div>`).join('')}
+  <p class="tag" style="margin-top:12px">Las noticias se actualizan manualmente desde news en modulos.js.</p>
+  <button class="btn alt" onclick="home()">Volver</button></div>`;
+}
+
+// ---- Emergencia ----
+const EMERG=[
+["🆘","Emergencias","911","Emergencias inmediatas, incluidas amenazas físicas."],
+["🚓","Policía Cibernética (SSPC)","gob.mx","Denuncia fraude, extorsión, suplantación y robo de cuentas. Busca Policía Cibernética en gob.mx."],
+["🏦","CONDUSEF","800 999 8080","Orientación ante cargos o fraudes bancarios."],
+["🕵️","Denuncia anónima","089","Reporte anónimo de delitos."],
+["💬","Línea de la Vida","800 911 2000","Apoyo emocional y en crisis."]
+];
+function emergencia(){
+  app.innerHTML=`<div class="card pop"><p class="tag">EMERGENCIA</p><h2 class="q">¿Te hackearon o te estafaron?</h2>
+  <ol class="tips"><li>Cambia la contraseña desde otro dispositivo.</li><li>Cierra todas las sesiones activas.</li><li>Activa la autenticación en dos pasos.</li><li>Revisa reenvíos de correo y apps conectadas.</li><li>Avisa a tu banco y guarda capturas como evidencia.</li><li>Denuncia ante la Policía Cibernética.</li></ol>
+  <h3 class="sub2" style="margin-top:14px">Contactos importantes</h3>
+  ${EMERG.map((e,i)=>{const num=e[2].replace(/\D/g,'');return `<div class="em" style="animation-delay:${i*.1}s"><span class="ic">${e[0]}</span><div><b>${e[1]}</b><p>${e[3]}</p>${num.length>=3?`<a href="tel:${num}">Llamar ${e[2]}</a>`:`<small>${e[2]}</small>`}</div></div>`}).join('')}
+  <p class="tag" style="margin-top:10px">Verifica los números en fuentes oficiales antes de una emergencia, porque pueden cambiar.</p>
+  <button class="btn alt" onclick="home()">Volver</button></div>`;
+}

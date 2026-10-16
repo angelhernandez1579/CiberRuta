@@ -105,7 +105,7 @@ function home(){
     <button onclick="generator()">🎲<span>Generador</span></button>
     <button onclick="detector()">🎣<span>Phishing</span></button>
     <button onclick="ranking()">🏆<span>Ranking</span></button>
-    <button onclick="profile()">👤<span>Perfil</span></button></div>
+    <button onclick="profile()">👤<span>Perfil</span></button></div><div class="tools" style="margin-top:8px"><button onclick="guias()">📘<span>Guías</span></button><button onclick="mapa()">🌍<span>Mapa</span></button><button onclick="noticias()">📰<span>Noticias</span></button><button style="background:#7f1d1d" onclick="emergencia()">🆘<span>Emergencia</span></button></div>
     <h1 class="center" style="margin:18px 0 16px">Tu ruta de ciberseguridad</h1>`;
   U.forEach((u,ui)=>{
     h+=`<section class="unit" style="border-color:${u.c}"><h2 style="color:${u.c}">${u.n}</h2>`;
@@ -169,7 +169,7 @@ function checker(){
   <input id="pw" class="inp" type="text" placeholder="Escribe una contraseña de prueba" oninput="check(this.value)" autocomplete="off">
   <div class="bar"><div id="pwb" style="width:0"></div></div>
   <p id="pwl" class="txt"></p><ul id="pwt" class="tips"></ul>
-  <p class="tag" style="margin-top:14px">Tu contraseña no sale de tu navegador: se analiza solo aquí.</p>
+  <button class="btn" onclick="breach()">Revisar en filtraciones conocidas</button><p id="pbr" class="txt"></p><p class="tag" style="margin-top:14px">Tu contraseña no sale de tu navegador: se analiza solo aquí.</p>
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 function check(p){
