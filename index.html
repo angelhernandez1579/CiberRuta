@@ -227,6 +227,22 @@ button:active,.opt:active,.node:active,.gcard:active,.tools button:active,.hgrid
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* ===== Segunda pasada: find-animation-opportunities + animate + apple-design + emil-design-eng ===== */
+/* Quitamos movimiento donde se repite decenas de veces al día (gate de frecuencia) */
+#nav button.on i{transform:none}
+@media (hover:hover) and (pointer:fine){ .gcard:hover{transform:none} }
+/* Notificaciones: entran desde el borde superior, misma dirección en la que se ocultan */
+@keyframes toastIn{from{transform:translate(-50%,-14px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.toast{animation:toastIn .35s var(--ease-drawer) both}
+/* Progreso: llenado con curva de salida fuerte, sin rebote */
+.bar div{transition:width .6s var(--ease-out)}
+.rfg{transition:stroke-dasharray .7s var(--ease-out)}
+/* Feedback de respuesta y apertura de paneles dentro de 300 ms */
+.fb{animation:up .28s var(--ease-drawer) both}
+.pop{animation:pop .28s var(--ease-out) both}
+/* Latido del nodo actual: más sutil */
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 </style>
 </head>
 <body>
