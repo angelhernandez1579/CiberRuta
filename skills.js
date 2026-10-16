@@ -33,10 +33,14 @@ const DIAG=[
 {q:'¿Sabes cómo recuperar una cuenta si te la roban?',s:'incidentes'}
 ];
 const TIENDA=[
-{id:'freeze',i:'🛟',n:'Protector de racha',d:'Salva tu racha si olvidas un día (máx. 3).',p:120},
-{id:'dx',i:'⚡',n:'Doble XP 30 min',d:'Todo el XP se duplica durante 30 minutos.',p:100},
-{id:'gold',i:'🟡',n:'Marco dorado',d:'Cosmético para tu avatar.',p:200},
-{id:'neon',i:'🟢',n:'Marco neón',d:'Cosmético para tu avatar.',p:250}
+{id:'freeze',cat:'Consumibles',i:'🛟',n:'Protector de racha',d:'Salva tu racha si olvidas un día (máx. 3).',p:300,nv:2},
+{id:'dx',cat:'Consumibles',i:'⚡',n:'Doble XP 30 min',d:'Todo el XP se duplica durante 30 minutos.',p:250,nv:3},
+{id:'gorro',cat:'Accesorios',i:'🎓',n:'Birrete de graduado',d:'Accesorio sobre tu foto.',p:500,nv:3,acc:true},
+{id:'escudo',cat:'Accesorios',i:'🛡️',n:'Escudo',d:'Escudo sobre tu foto.',p:900,nv:5,acc:true},
+{id:'rayo',cat:'Accesorios',i:'⚡',n:'Rayo',d:'Rayo sobre tu foto.',p:1500,nv:8,acc:true},
+{id:'gold',cat:'Marcos',i:'🟡',n:'Marco dorado',d:'Anillo dorado para tu foto.',p:800,nv:4},
+{id:'neon',cat:'Marcos',i:'🟢',n:'Marco neón',d:'Anillo neón para tu foto.',p:1200,nv:6},
+{id:'diamante',cat:'Marcos',i:'💎',n:'Marco diamante',d:'Brillo azul. Solo para nivel 10 o más.',p:2000,nv:10}
 ];
 
 // ===== Misiones diarias =====
@@ -252,34 +256,48 @@ function rvAns(i){
   const {x,q}=RV,ok=i===q[2];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('good');else if(j===i)b.classList.add('bad')});
   if(ok){P.review=P.review.filter(y=>y!==x);addXP(5,2);SFX.ok()}else{x.due=Date.now()+864e5;SFX.bad()}
-  MOOD=ok?'happy':'thinking';
+  MOOD=ok?'happy':'sad';
   save();
   $('fb').innerHTML=`<div class="mail"><b>${ok?'¡Bien! La dominas':'La volveremos a ver mañana'}</b><p>${q[3]}</p></div><button class="btn" onclick="rvNext()">Siguiente</button>`;
 }
 
 // ===== Tienda =====
 function tienda(){
+  const L=lvl(P.xp).l;
+  const item=t=>{
+    const owned=t.id!=='freeze'&&t.id!=='dx'&&!!(P.inv||{})[t.id];
+    const eq=t.acc?P.acc===t.id:P.equip===t.id;
+    const locked=L<t.nv;
+    let btn;
+    if(owned)btn=`<button class="mini" onclick="equipar('${t.id}')">${eq?'Quitar':'Usar'}</button>`;
+    else if(locked)btn=`<span class="lock">🔒 Nv ${t.nv}</span>`;
+    else btn=`<button class="mini" onclick="comprar('${t.id}')">🪙 ${t.p}</button>`;
+    return `<div class="gcard"><span class="ic">${t.i}</span><div><b>${t.n}</b><small>${t.d}${locked&&!owned?` · Requiere nivel ${t.nv}`:''}</small></div>${btn}</div>`;
+  };
+  const cats=[...new Set(TIENDA.map(t=>t.cat))];
   app.innerHTML=`<div class="card pop"><p class="tag">TIENDA</p><h2 class="q">Tus monedas: 🪙 ${P.coins}</h2>
-  ${TIENDA.map(t=>{
-    const frame=t.id==='gold'||t.id==='neon';
-    const owned=frame&&!!(P.inv||{})[t.id];
-    const btn=frame&&owned
-      ?`<button class="mini" onclick="equipar('${t.id}')">${P.equip===t.id?'Equipado':'Equipar'}</button>`
-      :`<button class="mini" onclick="comprar('${t.id}')">🪙 ${t.p}</button>`;
-    return `<div class="gcard"><span class="ic">${t.i}</span><div><b>${t.n}</b><small>${t.d}</small></div>${btn}</div>`;
-  }).join('')}
-  <p class="tag">Protectores: ${P.freeze||0}/3 · Doble XP: ${Date.now()<(P.dxUntil||0)?'activo':'inactivo'}</p>
-  <button class="btn alt" onclick="home()">Volver</button></div>`;
+  ${cats.map(c=>`<h3 class="sub2">${c}</h3>${TIENDA.filter(t=>t.cat===c).map(item).join('')}`).join('')}
+  <p class="tag" style="margin-top:12px">Protectores: ${P.freeze||0}/3 · Doble XP: ${Date.now()<(P.dxUntil||0)?'activo':'inactivo'}</p></div>`;
 }
 function comprar(id){
   const t=TIENDA.find(x=>x.id===id);
+  if(lvl(P.xp).l<t.nv)return toast(`🔒 Necesitas nivel ${t.nv}`);
   if(P.coins<t.p)return toast('No tienes suficientes monedas 🪙');
   if(id==='freeze'){if((P.freeze||0)>=3)return toast('Máximo 3 protectores');P.freeze=(P.freeze||0)+1}
   else if(id==='dx'){P.dxUntil=Math.max(Date.now(),P.dxUntil||0)+30*60e3}
-  else{P.inv=P.inv||{};if(P.inv[id])return toast('Ya lo tienes');P.inv[id]=true;P.equip=id}
+  else{
+    P.inv=P.inv||{};
+    if(P.inv[id])return toast('Ya lo tienes');
+    P.inv[id]=true;
+    if(t.acc)P.acc=id;else P.equip=id;
+  }
   P.coins-=t.p;save();SFX.ok();toast('✅ Comprado: '+t.n);tienda();
 }
-function equipar(id){P.equip=P.equip===id?'':id;save();tienda()}
+function equipar(id){
+  const t=TIENDA.find(x=>x.id===id);
+  if(t.acc)P.acc=P.acc===id?'':id;else P.equip=P.equip===id?'':id;
+  save();tienda();
+}
 
 // ===== Analizador de enlaces (no abre el enlace) =====
 const TUNEL=/(^|\.)(ngrok\.io|ngrok-free\.app|ngrok\.app|ngrok\.dev|serveo\.net|loca\.lt|localhost\.run|trycloudflare\.com|localtunnel\.me|pagekite\.me)$/;

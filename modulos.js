@@ -81,7 +81,7 @@ function mapa(){
 }
 
 function noticias(){
-  app.innerHTML=`<div class="card pop"><p class="tag">NOTICIAS · ${NEWS.fecha}</p><h2 class="q">Ciberseguridad hoy</h2>
+  app.innerHTML=`<div class="card pop"><p class="tag">NOTICIAS · ${NEWS.fecha}</p><div class="hrow"><h2 class="q" style="margin:0">Ciberseguridad hoy</h2><button class="refresh" onclick="noticias()" aria-label="Actualizar">↻</button></div>
   ${NEWS.items.map((n,i)=>`<div class="nw" style="animation-delay:${i*.15}s"><p>${n.t}</p><small>${n.d} · ${n.f} · <a href="${n.u}" target="_blank" rel="noopener">Leer</a></small></div>`).join('')}
   <p class="tag" style="margin-top:12px">Fuentes: RSS de INCIBE y MuySeguridad. Se actualiza editando news.js.</p>
   <button class="btn alt" onclick="home()">Volver</button></div>`;
@@ -138,10 +138,11 @@ function home(){
     h+='</div>';
   });
   app.innerHTML=h+footerHTML();
+  revisarToques();
 }
 function hub(){
   app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
-  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()'],['💬','Comunidad','comunidad()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
 }
 
 // ---- Pie de página (también en la ruta) ----
@@ -164,6 +165,7 @@ function admin(){
   <div class="atabs">
     <button class="atab on" onclick="adTab(this,'buscar')">Usuarios</button>
     <button class="atab" onclick="adTab(this,'stats')">Estadísticas</button>
+    <button class="atab" onclick="adTab(this,'reportes')">Reportes</button>
     <button class="atab" onclick="adTab(this,'log')">Actividad</button>
   </div><div id="ad"></div></div>`;
   adTab(null,'buscar');
@@ -172,6 +174,7 @@ function adTab(el,t){
   if(el)document.querySelectorAll('.atab').forEach(b=>b.classList.toggle('on',b===el));
   if(t==='buscar')return adBuscarUI();
   if(t==='stats')return adStats();
+  if(t==='reportes')return adReportes();
   if(t==='log')return adLog();
 }
 async function adLogWrite(accion,objetivo,detalle){
@@ -201,7 +204,7 @@ async function adFicha(u){
   <div class="edit"><label class="tag">Cantidad</label><input id="acant" class="inp" type="number" min="1" max="100000" value="50"></div>
   <div class="grid2">
     <button class="btn" onclick="adAjuste('xp',1)">+ XP</button><button class="btn alt" onclick="adAjuste('xp',-1)">− XP</button>
-    <button class="btn" onclick="adAjuste('coins',1)">+ 🪙</button><button class="btn alt" onclick="adAjuste('coins',-1)">− 🪙</button>
+    <button class="btn" onclick="adAjuste('coins',1)">+ 🪙</button><button class="btn alt" onclick="adAjuste('coins',-1)">− 🪙</button><button class="btn" onclick="adAjuste('streak',1)">+ racha</button><button class="btn alt" onclick="adAjuste('streak',-1)">− racha</button>
   </div>
   <button class="btn" onclick="adFundador()">${pf.marco_fundador?'Quitar marco fundador':'⭐ Dar marco fundador'}</button>
   <h3 class="sub2">Renombrar</h3>
@@ -224,9 +227,9 @@ async function adAjuste(campo,signo){
   const nuevo=Math.max(0,(cur[campo]||0)+delta);
   const {error}=await sb.from('perfiles').update({[campo]:nuevo}).eq('id',pf.id);
   if(error)return $('am').textContent='Error: '+error.message;
-  await adLogWrite(campo,pf.username,`${delta>0?'+':''}${delta} ${campo==='xp'?'XP':'monedas'} (total ${nuevo})`);
+  await adLogWrite(campo,pf.username,`${delta>0?'+':''}${delta} ${({xp:'XP',coins:'monedas',streak:'días de racha'})[campo]} (total ${nuevo})`);
   AD.cur={...pf,[campo]:nuevo};
-  $('am').textContent=`✅ ${campo==='xp'?'XP':'Monedas'} actualizado: ${nuevo}`;
+  $('am').textContent=`✅ ${({xp:'XP',coins:'Monedas',streak:'Racha'})[campo]} actualizado: ${nuevo}`;
 }
 async function adFundador(){
   const pf=AD.cur,on=!pf.marco_fundador;

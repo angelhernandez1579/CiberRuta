@@ -21,7 +21,7 @@ let rankCache={t:0,d:null};
 const sessionReady=sb.auth.getSession().then(({data})=>{sbUser=data.session?.user||null;return sbUser});
 sb.auth.onAuthStateChange((_e,s)=>{sbUser=s?.user||null});
 
-function newP(username){return{username,xp:0,coins:0,streak:0,day:"",bonusDay:"",done:[],badges:[],guides:{},phishOK:0,genCount:0,sims:[],review:[],daily:{day:"",done:[]},inv:{},equip:"",dxUntil:0,freeze:0,diag:null}}
+function newP(username){return{username,xp:0,coins:0,streak:0,day:"",bonusDay:"",done:[],badges:[],guides:{},phishOK:0,genCount:0,sims:[],review:[],daily:{day:"",done:[]},inv:{},equip:"",dxUntil:0,freeze:0,diag:null,acc:""}}
 async function loadProfile(){
   const {data:pf}=await sb.from("perfiles").select("*").eq("id",sbUser.id).maybeSingle();
   const {data:pr}=await sb.from("progreso").select("data").eq("id",sbUser.id).maybeSingle();
@@ -64,12 +64,12 @@ function queueSave(){clearTimeout(saveT);saveT=setTimeout(saveNow,800)}
 async function saveNow(){
   if(!sbUser||!P)return;
   await sb.from("perfiles").upsert({id:sbUser.id,username:P.username,xp:P.xp,coins:P.coins,streak:P.streak,badges_n:P.badges.length,updated_at:new Date().toISOString()});
-  await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag}});
+  await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag,acc:P.acc}});
 }
 async function fetchRanking(){
   if(rankCache.d&&Date.now()-rankCache.t<60000)return rankCache.d;
   await sessionReady;
-  const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url,marco_fundador,streak").order("xp",{ascending:false}).limit(50)
+  const q=sb.from("perfiles").select("id,username,xp,badges_n,avatar_url,marco_fundador,streak").order("xp",{ascending:false}).limit(50)
     .then(({data,error})=>({data:data||[],error:error?error.message:null}));
   const t=new Promise(r=>setTimeout(()=>r({data:null,error:"La consulta no respondió en 8 segundos. Revisa la conexión y recarga la página."}),8000));
   const res=await Promise.race([q,t]);

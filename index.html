@@ -290,6 +290,26 @@ main,header{position:relative;z-index:1}
 .mcard2 b{display:block;font-size:1.6rem;margin-top:4px;font-variant-numeric:tabular-nums}
 .mcard2 small{color:#94a3b8}
 .btn.danger{background:#dc2626;box-shadow:0 5px 0 #991b1b}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.refresh{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:#334155;color:#e2e8f0;font-size:1.3rem;cursor:pointer;box-shadow:0 3px 0 #1e293b}
+.refresh:active{transform:rotate(-90deg) scale(.95)}
+.btn.sm{width:auto;margin:0;padding:10px 18px}
+.rowbtn{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.post{background:#0f172a;border-radius:14px;padding:12px 14px;margin:10px 0}
+.phead{display:flex;align-items:center;gap:10px}
+.ptxt{margin:8px 0;white-space:pre-wrap;word-break:break-word}
+.pact{display:flex;gap:8px;justify-content:flex-end}
+.mini.ghost{background:#334155;color:#e2e8f0}
+.mini.danger2{background:#dc2626;color:#fff}
+.rk.col{flex-direction:column;align-items:flex-start}
+.lock{font-size:.8rem;color:#94a3b8;font-weight:700;white-space:nowrap}
+.fbm{display:flex;justify-content:center;margin-bottom:6px}
+.frame-diamante .av{box-shadow:0 0 0 3px #38bdf8,0 0 18px #38bdf8}
+[class*="acc-"]{position:relative;display:inline-block;margin-top:26px}
+[class*="acc-"]::before{position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:2rem;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));pointer-events:none}
+.acc-gorro::before{content:"🎓"}
+.acc-escudo::before{content:"🛡️"}
+.acc-rayo::before{content:"⚡"}
 </style>
 </head>
 <body>
@@ -318,5 +338,6 @@ main,header{position:relative;z-index:1}
 <script src="news.js"></script>
 <script src="modulos.js"></script>
 <script src="skills.js"></script>
+<script src="comunidad.js"></script>
 </body>
 </html>
