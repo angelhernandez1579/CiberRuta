@@ -52,8 +52,8 @@ async function saveNow(){
   await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag}});
 }
 async function fetchRanking(){
-  const {data}=await sb.from("perfiles").select("username,xp,badges_n,avatar_url").order("xp",{ascending:false}).limit(50);
-  return data||[];
+  const {data,error}=await sb.from("perfiles").select("username,xp,badges_n,avatar_url").order("xp",{ascending:false}).limit(50);
+  return {data:data||[],error:error?error.message:null};
 }
 
 async function updateUsername(name){
