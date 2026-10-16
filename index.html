@@ -6,15 +6,29 @@
 <title>CiberRuta</title>
 <style>
 *{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,sans-serif}
-body{background:#0f172a;color:#e2e8f0;min-height:100vh}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#1e293b;position:sticky;top:0;z-index:9;gap:8px}
-.logo{font-weight:900;font-size:1.2rem;color:#4ade80;cursor:pointer}
+body{background:#0f172a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:#1e293b;position:sticky;top:0;z-index:9;gap:8px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.2rem;color:#4ade80;cursor:pointer}
 .stats{display:flex;gap:10px;align-items:center;font-weight:700;font-size:.9rem}
 #mute{background:none;border:0;font-size:1.1rem;cursor:pointer}
 main{max-width:480px;margin:auto;padding:18px 18px 200px}
-.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.tools button{background:#1e293b;border:0;border-radius:14px;padding:12px 4px;color:#e2e8f0;font-size:1.4rem;cursor:pointer;border-bottom:4px solid #334155}
-.tools span{display:block;font-size:.62rem;margin-top:4px}
+.hero{text-align:center;padding:24px 0 10px}
+.hero h1{font-size:2.2rem;margin:10px 0 4px}
+.sub{color:#94a3b8;line-height:1.5;margin-bottom:18px}
+.rv{opacity:0;transform:translateY(30px);transition:.7s;margin:34px 0}
+.rv.in{opacity:1;transform:none}
+.rv h2{font-size:1.4rem;margin-bottom:10px;color:#38bdf8}
+.rv p{line-height:1.7;color:#cbd5e1}
+.feat{display:flex;gap:12px;background:#1e293b;border-radius:16px;padding:14px;margin:10px 0;border-left:5px solid #22c55e}
+.feat b{display:block;margin-bottom:4px}
+.feat div{font-size:.92rem;color:#cbd5e1;line-height:1.5}
+.feat .ic{font-size:1.8rem}
+.ods{background:#1e293b;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:.92rem;line-height:1.5}
+.ods b{color:#facc15}
+.ft{margin-top:50px;padding-top:20px;border-top:1px solid #334155;font-size:.9rem}
+.fcols{display:flex;justify-content:space-between;gap:16px;margin-top:14px;flex-wrap:wrap}
+.fcols div{display:flex;flex-direction:column;gap:8px}
+.fcols a{color:#94a3b8;text-decoration:none}
 .unit{background:#1e293b;border-radius:18px;padding:16px;margin-bottom:22px;border-bottom:5px solid #334155}
 .unit h2{font-size:1.1rem;margin-bottom:12px}
 .row{display:flex;align-items:center;gap:14px;margin:12px 0}
@@ -33,6 +47,9 @@ main{max-width:480px;margin:auto;padding:18px 18px 200px}
 .btn{display:block;width:100%;padding:14px;border:0;border-radius:14px;background:#22c55e;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 5px 0 #15803d;margin-top:12px}
 .btn:active{transform:translateY(3px);box-shadow:none}
 .btn.alt{background:#475569;box-shadow:0 5px 0 #334155}
+.dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#334155}
+.dots i.on{background:#4ade80;transform:scale(1.3)}
 .opt{display:block;width:100%;text-align:left;padding:14px;margin:10px 0;border-radius:14px;border:2px solid #334155;background:#0f172a;color:#e2e8f0;font-size:1rem;cursor:pointer;transition:all .2s}
 .opt:hover{border-color:#38bdf8}
 .good{background:#14532d!important;border-color:#22c55e!important}
@@ -40,7 +57,7 @@ main{max-width:480px;margin:auto;padding:18px 18px 200px}
 .top{display:flex;align-items:center;gap:12px;margin:6px 0}
 .x{background:none;border:0;color:#94a3b8;font-size:1.3rem;cursor:pointer}
 .bar{flex:1;height:14px;background:#334155;border-radius:8px;overflow:hidden}
-.bar div{height:100%;background:#4ade80;transition:width .4s}
+.bar div{height:100%;background:#4ade80;transition:width .6s}
 .fb{position:fixed;left:0;right:0;bottom:0;padding:18px 18px 26px;max-width:480px;margin:auto;border-radius:18px 18px 0 0;animation:up .3s}
 .okb{background:#14532d}
 .badb{background:#7f1d1d}
@@ -53,12 +70,17 @@ main{max-width:480px;margin:auto;padding:18px 18px 200px}
 .mail p{margin:6px 0}
 .badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
 .bd{background:#0f172a;border-radius:12px;padding:10px 4px;text-align:center;font-size:1.8rem;opacity:.3}
-.bd.on{opacity:1;border:2px solid #facc15}
+.bd.on{opacity:1;border:2px solid #facc15;animation:pop .5s}
 .bd span{display:block;font-size:.68rem;margin-top:4px}
 .rk{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:#0f172a;margin:8px 0;font-weight:600}
 .rk span{flex:1}
 .rk.me{border:2px solid #4ade80}
-.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#facc15;color:#0f172a;padding:10px 16px;border-radius:12px;font-weight:700;z-index:20;animation:pop .4s;white-space:nowrap;font-size:.9rem}
+.lvlc{display:flex;gap:14px;align-items:center}
+.bob{animation:bob 2.4s ease-in-out infinite}
+.wave{animation:wave 1.6s ease-in-out infinite;transform-origin:center}
+.float{animation:float 4s ease-in-out infinite}
+.tip{background:#0f172a;border-radius:14px;padding:10px 12px;font-size:.88rem;line-height:1.5;position:relative}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#facc15;color:#0f172a;padding:10px 16px;border-radius:12px;font-weight:700;z-index:20;animation:pop .4s;white-space:nowrap;font-size:.9rem;box-shadow:0 6px 0 #a16207}
 .pop{animation:pop .4s}
 .slide{animation:slide .35s}
 .shake{animation:shake .4s}
@@ -69,11 +91,17 @@ main{max-width:480px;margin:auto;padding:18px 18px 200px}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+@keyframes wave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(12deg)}}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tools button{background:#1e293b;border:0;border-radius:14px;padding:12px 4px;color:#e2e8f0;font-size:1.4rem;cursor:pointer;border-bottom:4px solid #334155}
+.tools span{display:block;font-size:.62rem;margin-top:4px}
 </style>
 </head>
 <body>
 <header>
-  <span class="logo" onclick="home()">🛡️ CiberRuta</span>
+  <span class="logo" onclick="enter()" id="logo"></span>
   <div class="stats"><span>⚡<b id="xp">0</b></span><span>🪙<b id="coins">0</b></span><span>🔥<b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
 </header>
 <main id="app"></main>
