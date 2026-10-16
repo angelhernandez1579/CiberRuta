@@ -120,6 +120,7 @@ function home(){
   const L=lvl(P.xp),nxt=ALL.find(a=>!P.done.includes(a.id))||ALL[ALL.length-1],nl=U[nxt.ui].L[nxt.li];
   let h=`<div class="card lvlc" style="margin-top:0">${MASC(64,'wave')}<div style="flex:1"><p class="tag">NIVEL ${L.l} · ${L.title}</p>
     <div class="bar"><div style="width:${L.cur/L.need*100}%"></div></div><p class="txt" style="margin:6px 0 0;font-size:.8rem">${L.cur}/${L.need} XP</p></div></div>
+    <div class="card mcard" onclick="misiones()"><span>🎯 Misiones de hoy</span><b>${missionsDone()}/3</b></div>
     <div class="banner" onclick="lesson(${nxt.ui},${nxt.li})"><div><small>MÓDULO ${nxt.ui+1} · LECCIÓN ${nxt.li+1}</small><b>${nl.t}</b></div><span>▶</span></div>`;
   let k=0;
   U.forEach((u,ui)=>{
@@ -138,5 +139,5 @@ function home(){
 }
 function hub(){
   app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
-  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()']].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()']].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
 }

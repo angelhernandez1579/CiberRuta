@@ -31,11 +31,11 @@ function lvl(xp){let l=1,need=100,x=xp;while(x>=need){x-=need;l++;need+=50}retur
 function save(){if(!P)return;stats();queueSave()}
 function stats(){if(!P)return;$('xp').textContent=P.xp;$('coins').textContent=P.coins;$('sk').textContent=P.streak}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2800)}
-function addXP(x,c){const a=lvl(P.xp).l;P.xp+=x;P.coins+=c;const b=lvl(P.xp);if(b.l>a)toast(`🎉 ¡Nivel ${b.l}! ${b.title}`)}
+function addXP(x,c){const a=lvl(P.xp).l;const mx=Date.now()<(P.dxUntil||0)?2:1;P.xp+=x*mx;P.coins+=c;const b=lvl(P.xp);if(b.l>a)toast(`🎉 ¡Nivel ${b.l}! ${b.title}`)}
 function award(k){if(!P||P.badges.includes(k))return;P.badges.push(k);P.coins+=25;toast(BADGES[k][0]+' Logro: '+BADGES[k][1]+' (+25 🪙)')}
 function touchStreak(){
   const today=new Date().toDateString(),yest=new Date(Date.now()-864e5).toDateString();
-  if(P.day!==today){P.streak=P.day===yest?P.streak+1:1;P.day=today}
+  const d2=new Date(Date.now()-2*864e5).toDateString();if(P.day!==today){if(P.day===yest)P.streak++;else if(P.day===d2&&P.freeze>0){P.freeze--;P.streak++;toast('🛟 Protector de racha usado: tu racha sigue')}else P.streak=1;P.day=today}
   if(P.streak>=3)award('streak3');
 }
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -114,7 +114,7 @@ function ask(){
 function answer(i){
   const q=cur.q[qi],ok=i===q[2];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('good');else if(j===i)b.classList.add('bad')});
-  if(ok){correct++;SFX.ok()}else{SFX.bad();document.querySelector('.card').classList.add('shake')}
+  if(ok){correct++;SFX.ok()}else{SFX.bad();document.querySelector('.card').classList.add('shake')}if(!ok)addReview(cur.id,qi);
   $('fb').innerHTML=`<div class="fb ${ok?'okb':'badb'}"><b>${ok?'¡Correcto! ✅':'Incorrecto ❌'}</b><p style="margin:6px 0 4px">${q[3]}</p><button class="btn" onclick="next()">Continuar</button></div>`;
 }
 function next(){qi++;qi<cur.q.length?ask():finish()}
@@ -245,7 +245,7 @@ function avatarHTML(url,size=72,name=''){
 function profile(){
   const L=lvl(P.xp);
   app.innerHTML=`<div class="card pop center">
-    ${avatarHTML(P.avatar,96,P.username)}
+    <div class="frame-${P.equip||'none'}">${avatarHTML(P.avatar,96,P.username)}</div>
     <h2 class="q" style="margin:12px 0 4px">${P.username}</h2>
     <p class="txt" style="margin:4px 0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
     <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
