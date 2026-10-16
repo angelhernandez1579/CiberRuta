@@ -111,7 +111,7 @@ function emergencia(){
 
 // ---- Navegación inferior y ruta ----
 function go(el,f){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b===el));f()}
-new MutationObserver(()=>{$('nav').style.display=(P&&!app.querySelector('.hero'))?'flex':'none'}).observe(app,{childList:true});
+new MutationObserver(()=>{$('nav').style.display=(P&&app.querySelector('.banner'))?'flex':'none'}).observe(app,{childList:true});
 function home(){
   if(!P)return auth();
   const today=new Date().toDateString();
