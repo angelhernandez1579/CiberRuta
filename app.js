@@ -73,7 +73,7 @@ function auth(){
   <p id="ae" style="color:#f87171;min-height:22px;margin-top:6px"></p>
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
   <button class="gbtn" onclick="signGoogle()">${GOOGLE_G}<span>Continuar con Google</span></button>
-  <p class="tag" style="text-transform:none;letter-spacing:0;font-weight:400;color:#94a3b8;margin-top:6px">El acceso con Google es solo para cuentas del dominio .udg.mx</p>
+  <p style="display:block;width:100%;text-align:center;margin:8px 0 0;font-size:.85rem;line-height:1.4;color:#94a3b8">El acceso con Google es solo para cuentas del dominio .udg.mx</p>
   <button class="abtn" onclick="signApple()">${APPLE_L}<span>Continuar con Apple</span></button>
   <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button></div>`;
 }
