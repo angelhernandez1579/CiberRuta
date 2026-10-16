@@ -51,9 +51,6 @@ async function signIn(email,password){
 function signGoogle(){
   sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:"https://angelhernandez1579.github.io/CiberRuta/"}});
 }
-function signApple(){
-  sb.auth.signInWithOAuth({provider:"apple",options:{redirectTo:"https://angelhernandez1579.github.io/CiberRuta/"}});
-}
 async function signOut(){await sb.auth.signOut();sbUser=null}
 function traduce(m){
   if(/Invalid login/i.test(m))return"Correo o contraseña incorrectos";
