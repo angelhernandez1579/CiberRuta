@@ -142,13 +142,14 @@ function home(){
 }
 function hub(){
   app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
-  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()'],['💬','Comunidad','comunidad()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🔗','Enlaces','analizador()'],['📰','Noticias','noticias()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
 }
 
 // ---- Pie de página (también en la ruta) ----
+const APP_VERSION="1.0";
 function footerHTML(){
   return `<footer class="ft"><p class="tag">Democratizando la educación en ciberseguridad mediante juegos, comunidad y buenas prácticas, alineados a los Objetivos de Desarrollo Sostenible de la ONU.</p>
-  <div class="fcols"><div><b>Legal & contacto</b><a href="privacidad.html">Aviso de Privacidad</a><a href="terminos.html">Términos de Servicio</a><a href="contacto.html">Contacto</a><a href="mailto:angel.hernandez1579@alumnos.udg.mx">angel.hernandez1579@alumnos.udg.mx</a></div></div></footer>`;
+  <div class="fcols"><div><b>Legal & contacto</b><a href="privacidad.html">Aviso de Privacidad</a><a href="terminos.html">Términos de Servicio</a><a href="contacto.html">Contacto</a><a href="mailto:angel.hernandez1579@alumnos.udg.mx">angel.hernandez1579@alumnos.udg.mx</a></div></div><p class="ver">CiberRuta v${APP_VERSION}</p></footer>`;
 }
 function instalarCard(){
   const standalone=window.navigator.standalone||matchMedia('(display-mode: standalone)').matches;

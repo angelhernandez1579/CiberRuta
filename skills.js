@@ -33,14 +33,14 @@ const DIAG=[
 {q:'¿Sabes cómo recuperar una cuenta si te la roban?',s:'incidentes'}
 ];
 const TIENDA=[
-{id:'freeze',cat:'Consumibles',i:'🛟',n:'Protector de racha',d:'Salva tu racha si olvidas un día (máx. 3).',p:300,nv:2},
-{id:'dx',cat:'Consumibles',i:'⚡',n:'Doble XP 30 min',d:'Todo el XP se duplica durante 30 minutos.',p:250,nv:3},
-{id:'gorro',cat:'Accesorios',i:'🎓',n:'Birrete de graduado',d:'Accesorio sobre tu foto.',p:500,nv:3,acc:true},
-{id:'escudo',cat:'Accesorios',i:'🛡️',n:'Escudo',d:'Escudo sobre tu foto.',p:900,nv:5,acc:true},
-{id:'rayo',cat:'Accesorios',i:'⚡',n:'Rayo',d:'Rayo sobre tu foto.',p:1500,nv:8,acc:true},
-{id:'gold',cat:'Marcos',i:'🟡',n:'Marco dorado',d:'Anillo dorado para tu foto.',p:800,nv:4},
-{id:'neon',cat:'Marcos',i:'🟢',n:'Marco neón',d:'Anillo neón para tu foto.',p:1200,nv:6},
-{id:'diamante',cat:'Marcos',i:'💎',n:'Marco diamante',d:'Brillo azul. Solo para nivel 10 o más.',p:2000,nv:10}
+{id:'freeze',cat:'Consumibles',i:'🛟',n:'Protector de racha',d:'Salva tu racha si olvidas un día (máx. 3).',p:120,nv:2},
+{id:'dx',cat:'Consumibles',i:'⚡',n:'Doble XP 30 min',d:'Todo el XP se duplica durante 30 minutos.',p:100,nv:3},
+{id:'gorro',cat:'Accesorios',i:'🎓',n:'Birrete de graduado',d:'Accesorio sobre tu foto.',p:250,nv:3,acc:true},
+{id:'escudo',cat:'Accesorios',i:'🛡️',n:'Escudo',d:'Escudo sobre tu foto.',p:450,nv:5,acc:true},
+{id:'rayo',cat:'Accesorios',i:'⚡',n:'Rayo',d:'Rayo sobre tu foto.',p:800,nv:8,acc:true},
+{id:'gold',cat:'Marcos',i:'🟡',n:'Marco dorado',d:'Anillo dorado para tu foto.',p:400,nv:4},
+{id:'neon',cat:'Marcos',i:'🟢',n:'Marco neón',d:'Anillo neón para tu foto.',p:600,nv:6},
+{id:'diamante',cat:'Marcos',i:'💎',n:'Marco diamante',d:'Brillo azul. Solo para nivel 10 o más.',p:1000,nv:10}
 ];
 
 // ===== Misiones diarias =====

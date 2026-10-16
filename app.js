@@ -135,7 +135,7 @@ function finish(){
   if(!P.done.includes(cur.id)){P.done.push(cur.id);gx=10*correct+5;gc=5*correct;addXP(gx,gc)}
   touchStreak();award('first');
   if(correct===n)award('perfect');
-  if(U[ui].L.every((_,k)=>P.done.includes(ui+'.'+k))&&!P.badges.includes('unit')){award('unit');addXP(40,50);toast('🎁 Cofre de unidad: +40 XP +50 🪙')}
+  if(U[ui].L.every((_,k)=>P.done.includes(ui+'.'+k))&&!(P.cofres||[]).includes(ui)){P.cofres=(P.cofres||[]).concat(ui);award('unit');addXP(40,50);toast('🎁 Cofre de '+U[ui].n+': +40 XP +50 🪙')}
   MOOD='happy';save();SFX.win();burst();
   app.innerHTML=`<div class="card pop center"><div class="big">🏆</div><h2 class="q">¡Lección completada!</h2><p class="txt">Correctas: ${correct}/${n}<br>Recompensa: +${gx} XP y +${gc} 🪙 ${gx?'':'(ya la habías completado)'}</p>${MASC(90)}<button class="btn" onclick="home()">Continuar en el mapa</button></div>`;
 }
@@ -250,7 +250,7 @@ async function ranking(force){
     return;
   }
   app.innerHTML=`<div class="card pop"><div class="hrow"><div><p class="tag">RANKING GLOBAL</p><h2 class="q" style="margin:0">Clasificación</h2></div><button class="refresh" onclick="ranking(true)" aria-label="Actualizar">↻</button></div>
-  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarBadge(avatarHTML(u.avatar_url,32,u.username),u.streak,'sm')}<span>${u.marco_fundador?"👑 ":""}${esc(u.username)}<small class="ttl">${lvl(u.xp).title}</small></span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span>${sbUser&&u.id!==sbUser.id?`<button class="mini" onclick="toque('${u.id}')" aria-label="Recordar que estudie">👋</button>`:''}</div>`).join('')||'<p>Aún no hay usuarios.</p>'}
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}" style="cursor:pointer" onclick="verPerfil('${u.username}')"><b>#${i+1}</b>${avatarBadge(avatarHTML(u.avatar_url,32,u.username),u.streak,'sm')}<span>${u.marco_fundador?"👑 ":""}${esc(u.username)}<small class="ttl">${lvl(u.xp).title}</small></span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span>${sbUser&&u.id!==sbUser.id?`<button class="mini" onclick="event.stopPropagation();toque('${u.id}')" aria-label="Recordar que estudie">👋</button>`:''}</div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 const GOOGLE_G=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7-10 7-17.5z"/><path fill="#FBBC05" d="M10.4 28.8c-.5-1.5-.8-3-.8-4.8s.3-3.3.8-4.8l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.9l-7.8 6C6.5 42.6 14.6 48 24 48z"/></svg>`;

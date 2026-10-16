@@ -66,3 +66,22 @@ async function revisarToques(){
   if(count)toast(`👋 Alguien te recordó que estudies (${count})`);
   localStorage.setItem('cr_toques_visto',new Date().toISOString());
 }
+
+// ===== Ficha pública de un usuario (desde el ranking). Solo datos públicos. =====
+async function verPerfil(u){
+  const {data:pf,error}=await sb.from('perfiles').select('id,username,xp,badges_n,avatar_url,streak,marco_fundador').eq('username',u).maybeSingle();
+  if(error||!pf)return toast('No se pudo cargar el perfil');
+  const L=lvl(pf.xp),yo=sbUser&&pf.id===sbUser.id;
+  app.innerHTML=`<div class="card pop center">
+    ${avatarBadge(avatarHTML(pf.avatar_url,96,pf.username),pf.streak)}
+    <h2 class="q" style="margin:12px 0 2px">${pf.marco_fundador?'👑 ':''}${esc(pf.username)}</h2>
+    <p class="tag">${L.title}</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="mcard2"><small>Nivel</small><b>${L.l}</b></div>
+      <div class="mcard2"><small>XP</small><b>${pf.xp}</b></div>
+      <div class="mcard2"><small>Logros</small><b>${pf.badges_n}</b></div>
+      <div class="mcard2"><small>Racha</small><b>${pf.streak} 🔥</b></div>
+    </div>
+    ${yo?'':`<button class="btn" onclick="toque('${pf.id}')">👋 Recordar que estudie</button>`}
+    <button class="btn alt" onclick="ranking()">Volver al ranking</button></div>`;
+}
