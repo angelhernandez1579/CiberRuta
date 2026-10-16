@@ -74,7 +74,6 @@ function auth(){
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
   <button class="gbtn" onclick="signGoogle()">${GOOGLE_G}<span>Continuar con Google</span></button>
   <p style="display:block;width:100%;text-align:center;margin:8px 0 0;font-size:.85rem;line-height:1.4;color:#94a3b8">El acceso con Google es solo para cuentas del dominio .udg.mx</p>
-  <button class="abtn" onclick="signApple()">${APPLE_L}<span>Continuar con Apple</span></button>
   <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button></div>`;
 }
 let FAILS=0;
@@ -243,7 +242,6 @@ async function ranking(){
   ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.marco_fundador?"⭐ ":""}${esc(u.username)}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
-const APPLE_L=`<svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M16.37 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 6.9 1.2 9.1.8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .8c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.2-2.6 0 0-2.4-.9-2.4-3.6zM14.1 5.7c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9.9 0 2.1-.6 2.7-1.4z"/></svg>`;
 const GOOGLE_G=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7-10 7-17.5z"/><path fill="#FBBC05" d="M10.4 28.8c-.5-1.5-.8-3-.8-4.8s.3-3.3.8-4.8l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.9l-7.8 6C6.5 42.6 14.6 48 24 48z"/></svg>`;
 function avatarHTML(url,size=72,name=''){
   const st=`width:${size}px;height:${size}px`,u=safeUrl(url);
