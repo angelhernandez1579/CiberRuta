@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id), app=$('app');
 const DB=()=>JSON.parse(localStorage.getItem('cr_users')||'{}');
 const putDB=d=>localStorage.setItem('cr_users',JSON.stringify(d));
-let USERS=DB(), ME=localStorage.getItem('cr_session'), P=(ME&&USERS[ME])||null;
+let ME=null,P=null;
 const ALL=[];
 U.forEach((u,ui)=>u.L.forEach((l,li)=>ALL.push({id:ui+'.'+li,ui,li})));
 const SIGNS=["Urgencia o amenaza","Dominio extraño","Enlace sospechoso","Pide datos o contraseñas","Saludo genérico"];
@@ -28,7 +28,7 @@ function tgl(){muted=!muted;$('mute').textContent=muted?'🔇':'🔊'}
 // ---- Estado, niveles y recompensas ----
 $('logo').innerHTML=LOGO+' CiberRuta';
 function lvl(xp){let l=1,need=100,x=xp;while(x>=need){x-=need;l++;need+=50}return{l,cur:x,need,title:TITLES[Math.min(l-1,TITLES.length-1)]}}
-function save(){if(!P)return;USERS[ME]=P;putDB(USERS);stats()}
+function save(){if(!P)return;stats();queueSave()}
 function stats(){if(!P)return;$('xp').textContent=P.xp;$('coins').textContent=P.coins;$('sk').textContent=P.streak}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2800)}
 function addXP(x,c){const a=lvl(P.xp).l;P.xp+=x;P.coins+=c;const b=lvl(P.xp);if(b.l>a)toast(`🎉 ¡Nivel ${b.l}! ${b.title}`)}
@@ -66,29 +66,31 @@ function intro(){
   window.scrollTo(0,0);
 }
 
-// ---- Cuentas ----
+// ---- Cuentas (Supabase) ----
 function auth(){
   app.innerHTML=`<div class="card pop"><p class="tag">CUENTA</p><h2 class="q">${authMode==='login'?'Inicia sesión':'Crea tu cuenta'}</h2>
-  <input id="un" class="inp" placeholder="Usuario (3-16 caracteres)" maxlength="16" autocomplete="username">
+  ${authMode==='reg'?'<input id="un" class="inp" placeholder="Usuario (3-16 caracteres)" maxlength="16" autocomplete="username">':''}
+  <input id="ue" class="inp" type="email" placeholder="Correo" autocomplete="email">
   <input id="up" class="inp" type="password" placeholder="Contraseña (mín. 6)" autocomplete="current-password">
   <p id="ae" style="color:#f87171;min-height:22px;margin-top:6px"></p>
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
+  <button class="btn alt" onclick="signGoogle()">Continuar con Google</button>
   <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button>
   <button class="btn alt" onclick="intro()">← Volver a la portada</button></div>`;
 }
 async function doAuth(){
-  const u=$('un').value.trim(),p=$('up').value;
-  if(!/^\w{3,16}$/.test(u))return $('ae').textContent='Usuario: 3-16 letras, números o _';
-  if(p.length<6)return $('ae').textContent='La contraseña debe tener al menos 6 caracteres';
-  const h=await sha(p);USERS=DB();
-  if(authMode==='reg'){
-    if(USERS[u])return $('ae').textContent='Ese usuario ya existe';
-    USERS[u]={h,xp:0,coins:0,badges:[],done:[],streak:0,day:'',bonusDay:'',phishOK:0,genCount:0};
-  }else if(!USERS[u]||USERS[u].h!==h)return $('ae').textContent='Usuario o contraseña incorrectos';
-  ME=u;P=USERS[u];localStorage.setItem('cr_session',u);
-  save();home();
+  const e=$('ue').value.trim(),p=$('up').value,u=authMode==='reg'?$('un').value.trim():'';
+  const err=m=>$('ae').textContent=m;
+  if(authMode==='reg'&&!/^\w{3,16}$/.test(u))return err('Usuario: 3-16 letras, números o _');
+  if(!e.includes('@'))return err('Escribe un correo válido');
+  if(p.length<6)return err('La contraseña debe tener al menos 6 caracteres');
+  err('Procesando...');
+  const r=authMode==='reg'?await signUp(e,p,u):await signIn(e,p);
+  if(r.error)return err(r.error);
+  if(r.needsConfirm)return err('Revisa tu correo para confirmar la cuenta y luego entra.');
+  P=await loadProfile();ME=P.username;home();
 }
-function logout(){localStorage.removeItem('cr_session');ME=null;P=null;authMode='login';intro()}
+async function logout(){await signOut();ME=null;P=null;authMode='login';intro()}
 
 // ---- Inicio (mapa) ----
 // ---- Lecciones paginadas: teoría (2 páginas) y luego práctica ----
@@ -228,12 +230,11 @@ function judge(){
 }
 
 // ---- Ranking y perfil ----
-function ranking(){
-  USERS=DB();
-  const arr=Object.entries(USERS).map(([n,u])=>({n,xp:u.xp,b:u.badges.length})).sort((a,b)=>b.xp-a.xp);
-  app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2>
-  ${arr.map((u,i)=>`<div class="rk ${u.n===ME?'me':''}"><b>#${i+1}</b><span>${u.n}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.b}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
-  <p class="tag" style="margin-top:14px">Ranking local: incluye las cuentas creadas en este navegador.</p>
+async function ranking(){
+  app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2><p class="txt">Cargando...</p></div>`;
+  const arr=await fetchRanking();
+  app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b><span>${u.username}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 function profile(){
@@ -246,4 +247,9 @@ function profile(){
   <button class="btn" onclick="home()">Volver</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 
-intro();
+async function boot(){
+  await sessionReady;
+  if(sbUser){P=await loadProfile();ME=P.username}
+  intro();
+}
+boot();
