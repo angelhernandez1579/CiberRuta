@@ -232,7 +232,11 @@ function judge(){
 // ---- Ranking y perfil ----
 async function ranking(){
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">Clasificación</h2><p class="txt">Cargando...</p></div>`;
-  const arr=await fetchRanking();
+  const {data:arr,error}=await fetchRanking();
+  if(error){
+    app.innerHTML=`<div class="card pop"><p class="tag">RANKING</p><h2 class="q">No se pudo cargar</h2><div class="mail">${error}</div><button class="btn" onclick="ranking()">Reintentar</button><button class="btn alt" onclick="home()">Volver</button></div>`;
+    return;
+  }
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
   ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.username}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
