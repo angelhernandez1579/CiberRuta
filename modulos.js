@@ -109,9 +109,10 @@ function go(el,f){document.querySelectorAll('#nav button').forEach(b=>b.classLis
 function syncChrome(){
   const isHome=!!app.querySelector('.banner'),isIntro=!!app.querySelector('.hero');
   $('nav').style.display=(P&&isHome)?'flex':'none';
-  $('back').style.display=(P&&!isHome&&!isIntro)?'block':'none';
+  const inQuiz=!!app.querySelector('.fb');
+  $('back2').style.display=(P&&!isHome&&!isIntro&&!inQuiz)?'block':'none';
 }
-new MutationObserver(syncChrome).observe(app,{childList:true});
+new MutationObserver(syncChrome).observe(app,{childList:true,subtree:true});
 function home(){
   if(!P)return auth();
   document.querySelectorAll('#nav button').forEach((b,i)=>b.classList.toggle('on',i===0));

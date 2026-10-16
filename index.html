@@ -184,12 +184,13 @@ main{padding-bottom:110px}
 .ft{text-align:center}
 .fcols{justify-content:center;text-align:center}
 .fcols div{align-items:center;text-align:center}
+#back2{display:none;position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:auto;z-index:11;background:#334155;color:#fff;border:0;padding:16px;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 -3px 0 #1e293b}
+#back2:active{transform:translateY(2px)}
 </style>
 </head>
 <body>
 <header>
   <span class="logo" onclick="enter()" id="logo"></span>
-  <button id="back" onclick="home()">← Ruta</button>
   <button id="homebtn" onclick="intro()" title="Portada">🏠</button>
   <div class="stats"><span>⚡<b id="xp">0</b></span><span>🪙<b id="coins">0</b></span><span>🔥<b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
 </header>
@@ -204,6 +205,7 @@ main{padding-bottom:110px}
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="supa.js"></script>
+<button id="back2" onclick="home()">← Volver a aprendizaje</button>
 <script src="lessons.js"></script>
 <script src="extra.js"></script>
 <script src="lessons2.js"></script>
