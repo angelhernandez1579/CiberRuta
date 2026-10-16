@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CiberRuta">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a">
 <title>CiberRuta</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CiberRuta">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-180.png">
+
 <style>
 *{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,sans-serif}
 body{background:#0f172a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
@@ -161,6 +174,11 @@ main{padding-bottom:110px}
 .frame-neon .av{box-shadow:0 0 0 4px #22c55e,0 0 18px #22c55e}
 .fb{max-height:60vh;overflow:auto}
 .mail{line-height:1.5}
+.abtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:0;border-radius:14px;background:#000;color:#fff;font-weight:700;font-size:1rem;margin-top:10px;cursor:pointer;box-shadow:0 4px 0 #333}
+.abtn:active{transform:translateY(3px);box-shadow:none}
+.frame-fundador .av{box-shadow:0 0 0 4px #f5c542,0 0 22px #f5c542}
+#nav button{font-size:.62rem;padding:6px 4px}
+#nav button i{font-size:1.3rem}
 </style>
 </head>
 <body>
@@ -175,6 +193,7 @@ main{padding-bottom:110px}
 <button onclick="go(this,hub)"><i>🧰</i>Herramientas</button>
 <button onclick="go(this,ranking)"><i>🏆</i>Ranking</button>
 <button onclick="go(this,noticias)"><i>📰</i>Noticias</button>
+<button onclick="go(this,tienda)"><i>🛒</i>Tienda</button>
 <button onclick="go(this,profile)"><i>👤</i>Perfil</button>
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>

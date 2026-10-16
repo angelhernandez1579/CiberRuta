@@ -114,6 +114,7 @@ function syncChrome(){
 new MutationObserver(syncChrome).observe(app,{childList:true});
 function home(){
   if(!P)return auth();
+  document.querySelectorAll('#nav button').forEach((b,i)=>b.classList.toggle('on',i===0));
   const today=new Date().toDateString();
   if(P.bonusDay!==today){P.bonusDay=today;addXP(20,10);toast('🎁 Bonificación diaria +20 XP +10 🪙');save()}
   stats();
@@ -135,9 +136,33 @@ function home(){
     });
     h+='</div>';
   });
-  app.innerHTML=h;
+  app.innerHTML=h+footerHTML();
 }
 function hub(){
   app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
-  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()']].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🛒','Tienda','tienda()'],['🔗','Enlaces','analizador()'],['🏠','Portada','intro()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+}
+
+// ---- Pie de página (también en la ruta) ----
+function footerHTML(){
+  return `<footer class="ft"><p class="tag">Democratizando la educación en ciberseguridad mediante juegos, comunidad y buenas prácticas, alineados a los Objetivos de Desarrollo Sostenible de la ONU.</p>
+  <div class="fcols"><div><b>Plataforma</b><a href="#" onclick="home();return false">Aprendizaje</a><a href="#" onclick="hub();return false">Herramientas</a><a href="#" onclick="ranking();return false">Ranking</a></div>
+  <div><b>Legal & contacto</b><a href="#">Aviso de Privacidad</a><a href="#">Términos de Servicio</a><a href="mailto:contacto@ciberruta.example">contacto@ciberruta.example</a></div></div></footer>`;
+}
+
+// ---- Administración (solo cuentas con is_admin; el servidor también lo verifica) ----
+function admin(){
+  if(!P.is_admin)return home();
+  app.innerHTML=`<div class="card pop"><p class="tag">ADMINISTRACIÓN</p><h2 class="q">Marco fundador</h2>
+  <input id="au" class="inp" placeholder="Nombre de usuario" maxlength="16" autocomplete="off">
+  <button class="btn" onclick="fund(true)">⭐ Dar marco fundador</button>
+  <button class="btn alt" onclick="fund(false)">Quitar marco</button>
+  <p id="ae2" class="tag" style="min-height:20px"></p>
+  <button class="btn alt" onclick="hub()">Volver</button></div>`;
+}
+async function fund(on){
+  const u=$('au').value.trim();
+  if(!/^\w{3,16}$/.test(u))return $('ae2').textContent='Usuario inválido';
+  const err=await adminSetFounder(u,on);
+  $('ae2').textContent=err||(on?'✅ Marco otorgado a '+u:'Marco retirado de '+u);
 }

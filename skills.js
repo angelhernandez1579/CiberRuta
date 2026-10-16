@@ -93,25 +93,65 @@ function caseAns(i){
   SFX[ok?'ok':'bad']();
 }
 
-// ===== Simulacros =====
+// ===== Simulacros (fijos + generador infinito) =====
+let CURSIM=null;
+const pickR=a=>a[Math.random()*a.length|0];
+const shuffleR=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function mkSim(icon,t,msg,pregunta,good,bads,signals,why,rama){
+  const ops=shuffleR([good,...bads]);
+  return{id:'rnd',rnd:true,rama,icon,t,msg,pregunta,ops,ok:ops.indexOf(good),signals,why};
+}
+function genSim(){
+  const k=Math.floor(Math.random()*4),m=pickR(['BancoSol','PayFlow','MercadoSur','CloudBox','TiendaMX']),d=m.toLowerCase();
+  const fake=d+'-'+pickR(['seguridad','verif','soporte','acceso'])+pickR(['.top','.xyz','.click','.live']);
+  const hr=1+Math.floor(Math.random()*23),monto=(Math.floor(Math.random()*40)+5)*10;
+  if(k===0)return mkSim('📧','Correo de phishing',`De: aviso@${fake}<br>Asunto: Actividad inusual en tu cuenta de ${m}<br><br>Verifica tu identidad en las próximas ${hr} horas: https://${fake}/verificar`,'¿Qué haces?',
+    `Entro a la app o al sitio oficial de ${m} escribiendo la dirección yo mismo`,['Hago clic y verifico mi identidad','Respondo el correo pidiendo más información'],
+    [`El dominio ${fake} no es el oficial de ${m}`,`Urgencia artificial: ${hr} horas`,`El enlace no lleva a ${d}.com`,'Pide verificar datos personales por correo'],
+    'Las empresas legítimas no piden verificar identidad con plazo por correo. Entrar tú mismo al sitio oficial es lo seguro.','estafas');
+  if(k===1)return mkSim('📦','SMS de paquetería',`Tu envío no pudo entregarse. Paga $${monto/10}.00 de gestión aquí: https://${fake}/pago`,'¿Qué decides?',
+    'Reviso el número de guía en la app oficial de la paquetería',['Pago la cuota para recibirlo','Reenvío el mensaje a mis contactos'],
+    [`Cuota pequeña pedida mediante un enlace`,`El dominio ${fake} no pertenece a la paquetería`,'Presión para pagar pronto'],
+    'Las paqueterías no cobran por enlaces de SMS. El número de guía en su app oficial te dice la verdad.','estafas');
+  if(k===2)return mkSim('🔑','Página de inicio de sesión falsa',`Llegaste desde un anuncio a: ${fake}/login<br>La página se parece a la de ${m}.<br>Mensaje: "Tu sesión expiró. Vuelve a iniciar sesión."`,'¿Qué haces?',
+    'Cierro la pestaña y escribo la dirección oficial yo mismo',['Ingreso mi contraseña de siempre','Pruebo una contraseña falsa para ver qué pasa'],
+    [`El dominio ${fake} no es el oficial`,'Llegaste desde un anuncio, no desde la web oficial','El candado solo indica cifrado, no legitimidad'],
+    'Escribir tu contraseña en una página falsa se la entrega al atacante. Escribir la dirección tú mismo evita la copia.','cuentas');
+  return mkSim('📞','Llamada de alguien que dice ser el banco',`"Hola, soy del área de seguridad de ${m}. Detectamos un cargo de $${monto}. Dígame el código que le llegó por SMS para cancelarlo."`,'¿Qué haces?',
+    'Cuelgo y llamo al número oficial que aparece en mi tarjeta o app',['Le dicto el código para cancelar el cargo','Le pregunto su nombre y sigo la llamada'],
+    ['Pide un código de verificación','Genera miedo con un cargo inesperado','Presiona para actuar en el momento'],
+    'El código SMS es la llave de tu cuenta. Ninguna institución legítima lo pide por teléfono.','estafas');
+}
 function simulacros(){
   app.innerHTML=`<div class="card pop"><p class="tag">SIMULACROS</p><h2 class="q">Decide en situaciones reales</h2>
+  <button class="btn" onclick="runRandom()">🎲 Simulacro aleatorio (ilimitado)</button>
   ${SIMS.map(s=>`<div class="gcard" onclick="runSim('${s.id}')"><span class="ic">${s.icon}</span><div><b>${s.t}</b><small>${RAMAS.find(r=>r.id===s.rama).n}</small></div><span>${(P.sims||[]).includes(s.id)?'✅':'+20 XP'}</span></div>`).join('')}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
-function runSim(id){
-  const s=SIMS.find(x=>x.id===id);
+function runRandom(){CURSIM=genSim();showSim()}
+function runSim(id){CURSIM=SIMS.find(x=>x.id===id);showSim()}
+function showSim(){
+  const s=CURSIM;
   app.innerHTML=`<div class="card pop"><p class="tag">SIMULACRO · ${RAMAS.find(r=>r.id===s.rama).n}</p><h2 class="q">${s.icon} ${s.t}</h2>
   <div class="mail">${s.msg}</div><p class="txt">${s.pregunta}</p>
-  ${s.ops.map((o,i)=>`<button class="opt" onclick="simAns('${id}',${i})">${o}</button>`).join('')}<div id="fb"></div></div>`;
+  ${s.ops.map((o,i)=>`<button class="opt" onclick="simAns(${i})">${o}</button>`).join('')}<div id="fb"></div></div>`;
 }
-function simAns(id,i){
-  const s=SIMS.find(x=>x.id===id),ok=i===s.ok,first=!(P.sims||[]).includes(id);
+function simAns(i){
+  const s=CURSIM,ok=i===s.ok;
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===s.ok)b.classList.add('good');else if(j===i)b.classList.add('bad')});
-  if(first){P.sims=(P.sims||[]).concat(id);if(ok)addXP(20,8);markDaily('sim');save()}
+  if(!s.rnd){
+    const first=!(P.sims||[]).includes(s.id);
+    if(first){P.sims=(P.sims||[]).concat(s.id);if(ok)addXP(20,8)}
+  }else{
+    if(!P.rnd||P.rnd.day!==hoy())P.rnd={day:hoy(),n:0};
+    if(ok&&P.rnd.n<10){P.rnd.n++;addXP(10,3)}
+  }
+  markDaily('sim');save();
   $('fb').innerHTML=`<div class="fb ${ok?'okb':'badb'}"><b>${ok?'¡Buena decisión! ✅':'Esa decisión te expone ❌'}</b>
   <p><b>Señales que debías detectar:</b></p><ul class="tips">${s.signals.map(x=>`<li>${x}</li>`).join('')}</ul>
-  <p><b>Por qué:</b> ${s.why}</p><button class="btn" onclick="simulacros()">Volver a simulacros</button></div>`;
+  <p><b>Por qué:</b> ${s.why}</p>
+  <button class="btn" onclick="${s.rnd?'runRandom()':'simulacros()'}">${s.rnd?'Siguiente simulacro ▶':'Volver a simulacros'}</button>
+  <button class="btn alt" onclick="simulacros()">Volver a la lista</button></div>`;
   SFX[ok?'ok':'bad']();
 }
 
@@ -241,6 +281,10 @@ function comprar(id){
 function equipar(id){P.equip=P.equip===id?'':id;save();tienda()}
 
 // ===== Analizador de enlaces (no abre el enlace) =====
+const TUNEL=/(^|\.)(ngrok\.io|ngrok-free\.app|ngrok\.app|ngrok\.dev|serveo\.net|loca\.lt|localhost\.run|trycloudflare\.com|localtunnel\.me|pagekite\.me)$/;
+const HOSTING=/(^|\.)(pages\.dev|workers\.dev|netlify\.app|vercel\.app|web\.app|firebaseapp\.com|glitch\.me|onrender\.com|repl\.co|replit\.dev|herokuapp\.com|000webhostapp\.com|weebly\.com|wixsite\.com|blogspot\.com|godaddysites\.com|sites\.google\.com)$/;
+const ACORT=/^(bit\.ly|tinyurl\.com|t\.co|goo\.gl|ow\.ly|is\.gd|cutt\.ly|rebrand\.ly|shorturl\.at|tiny\.cc)$/;
+const MARCAS={paypal:'paypal.com',amazon:'amazon.com',apple:'apple.com',icloud:'icloud.com',google:'google.com',gmail:'gmail.com',microsoft:'microsoft.com',outlook:'outlook.com',netflix:'netflix.com',whatsapp:'whatsapp.com',facebook:'facebook.com',instagram:'instagram.com',bbva:'bbva.mx',santander:'santander.com.mx',banorte:'banorte.com',banamex:'banamex.com',mercadolibre:'mercadolibre.com.mx',sat:'sat.gob.mx',imss:'imss.gob.mx'};
 function analizador(){
   app.innerHTML=`<div class="card pop"><p class="tag">ANALIZADOR DE ENLACES</p><h2 class="q">Revisa un enlace sin abrirlo</h2>
   <input id="ur" class="inp" placeholder="Pega el enlace aquí" autocomplete="off">
@@ -251,17 +295,30 @@ function analiza(){
   const raw=$('ur').value.trim();if(!raw)return;
   let u;
   try{u=new URL(/^https?:\/\//i.test(raw)?raw:'https://'+raw)}catch(e){return $('ua').innerHTML='<div class="mail">No es un enlace válido.</div>'}
-  const w=[],c=[],host=u.hostname.toLowerCase(),full=(host+u.pathname+u.search).toLowerCase();
+  const host=u.hostname.toLowerCase(),path=(u.pathname+u.search).toLowerCase(),full=host+path;
+  const tokens=host.split(/[.\-]/);
+  const norm=tokens.map(t=>t.replace(/0/g,'o').replace(/1/g,'l').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b'));
+  const w=[],c=[];
+  if(TUNEL.test(host))w.push('Usa un servicio de túnel: expone una computadora personal a internet y se usa mucho en phishing temporal.');
+  else if(HOSTING.test(host))c.push('Está alojado en una plataforma gratuita. Cualquiera puede publicar ahí, así que revisa el contenido con cuidado.');
+  if(ACORT.test(host))c.push('Es un acortador: oculta el destino real.');
+  for(const [m,dom] of Object.entries(MARCAS)){
+    const parece=tokens.includes(m)||norm.includes(m);
+    if(parece&&!(host===dom||host.endsWith('.'+dom))){w.push(`Parece imitar a ${m}, pero su dominio oficial es ${dom}.`);break}
+  }
   if(u.protocol!=='https:')w.push('No usa HTTPS: los datos viajan sin cifrar.');
-  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(host))w.push('Usa una dirección IP en vez de un nombre de dominio.');
+  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(host))w.push('Usa una dirección IP en lugar de un nombre de dominio.');
   if(raw.includes('@'))w.push('Contiene "@", que puede ocultar el destino real.');
-  if(host.includes('xn--'))w.push('Usa caracteres especiales que pueden imitar letras.');
-  if(/\.(top|xyz|click|zip|tk|ml|gq|cf|info|buzz)$/.test(host))w.push('La extensión del dominio es poco confiable.');
-  if(host.split('.').length>4)w.push('Tiene demasiados subdominios.');
-  if((host.match(/-/g)||[]).length>=2)w.push('El dominio tiene varios guiones, común en sitios falsos.');
-  if(/login|verif|secure|seguro|account|cuenta|update|confirm|pago|pay|banco|bank|soporte/.test(full))w.push('Usa palabras de acceso o urgencia (login, verificar, cuenta, pago...).');
-  if(/bit\.ly|tinyurl|t\.co|goo\.gl|ow\.ly/.test(host))c.push('Es un acortador: no sabes el destino hasta abrirlo.');
-  if(raw.length>75)c.push('Es muy largo; los enlaces engañosos suelen serlo.');
-  const nivel=w.length>=2?'🔴 Alto riesgo':(w.length||c.length)?'🟡 Revisar con cuidado':'🟢 Sin señales evidentes';
-  $('ua').innerHTML=`<div class="mail"><b>${nivel}</b>${w.length?'<ul class="tips">'+w.map(x=>`<li>${x}</li>`).join('')+'</ul>':''}${c.length?'<p>'+c.join(' ')+'</p>':''}<p><b>Dominio:</b> ${host}</p><p>Ninguna revisión garantiza seguridad. No abras el enlace: entra escribiendo la dirección oficial tú mismo.</p></div>`;
+  if(host.includes('xn--'))w.push('Usa caracteres especiales (punycode) que pueden imitar letras.');
+  if(/\.(top|xyz|click|zip|tk|ml|gq|cf|ga|buzz|live|support)$/.test(host))w.push('La extensión del dominio es poco confiable.');
+  if(tokens.length>5)w.push('Tiene demasiados subdominios.');
+  if(/login|verif|secure|seguro|account|cuenta|update|confirm|pago|pay|banco|bank|soporte|reset|recuper|wallet/.test(full))w.push('Usa palabras de acceso o urgencia (login, verificar, cuenta, pago...).');
+  if(/\d{5,}/.test(host))w.push('El dominio tiene muchos números seguidos, típico de sitios generados en masa.');
+  if(raw.length>100)c.push('Es un enlace muy largo; los engañosos suelen serlo para ocultar partes.');
+  const nivel=w.length>=2?'🔴 Alto riesgo':(w.length||c.length)?'🟡 Revisar con cuidado':'🟢 Sin señales conocidas';
+  $('ua').innerHTML=`<div class="mail"><b>${nivel}</b>
+  ${w.length?'<ul class="tips">'+w.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>':''}
+  ${c.length?'<ul class="tips">'+c.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>':''}
+  <p><b>Dominio analizado:</b> ${esc(host)}</p>
+  <p>Esta herramienta revisa el texto del enlace y no lo abre. Ningún análisis garantiza seguridad: si dudas, entra escribiendo la dirección oficial tú mismo.</p></div>`;
 }

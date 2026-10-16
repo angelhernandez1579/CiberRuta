@@ -34,7 +34,7 @@ async function loadProfile(){
     }
     return newP(base);
   }
-  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak,avatar:pf.avatar_url};
+  return {...newP(pf.username),...(pr?.data||{}),username:pf.username,xp:pf.xp,coins:pf.coins,streak:pf.streak,avatar:pf.avatar_url,is_admin:pf.is_admin,marco_fundador:pf.marco_fundador};
 }
 async function signUp(email,password,username){
   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
@@ -72,7 +72,7 @@ async function saveNow(){
 async function fetchRanking(){
   if(rankCache.d&&Date.now()-rankCache.t<60000)return rankCache.d;
   await sessionReady;
-  const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url").order("xp",{ascending:false}).limit(50)
+  const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url,marco_fundador").order("xp",{ascending:false}).limit(50)
     .then(({data,error})=>({data:data||[],error:error?error.message:null}));
   const t=new Promise(r=>setTimeout(()=>r({data:null,error:"La consulta no respondió en 8 segundos. Revisa la conexión y recarga la página."}),8000));
   const res=await Promise.race([q,t]);
@@ -107,4 +107,11 @@ async function uploadAvatar(file){
   const {error:e2}=await sb.from("perfiles").update({avatar_url:url}).eq("id",sbUser.id);
   if(e2)return{error:e2.message};
   return{url};
+}
+
+async function adminSetFounder(u,on){
+  const {data,error}=await sb.from("perfiles").update({marco_fundador:on}).eq("username",u).select("username");
+  if(error)return error.message;
+  if(!data||!data.length)return"Ese usuario no existe";
+  return null;
 }

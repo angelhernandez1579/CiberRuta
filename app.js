@@ -242,7 +242,7 @@ async function ranking(){
     return;
   }
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
-  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${esc(u.username)}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.marco_fundador?"⭐ ":""}${esc(u.username)}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 const APPLE_L=`<svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M16.37 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 6.9 1.2 9.1.8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .8c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.2-2.6 0 0-2.4-.9-2.4-3.6zM14.1 5.7c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9.9 0 2.1-.6 2.7-1.4z"/></svg>`;
@@ -262,7 +262,7 @@ function profile(){
     <p id="pe" class="tag" style="min-height:20px"></p>
     <h3 style="margin:14px 0 8px;text-align:left">Logros</h3><div class="badges">
     ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
-    <button class="btn" onclick="home()">Volver</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
+    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<button class="btn alt" onclick="intro()">🏠 Ir a la portada</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 async function renameUser(){
   if(!cool('rename',10000))return $('pe').textContent='Espera unos segundos antes de cambiarlo otra vez';
@@ -283,10 +283,10 @@ async function changePhoto(inp){
   if(r.error)return $('pe').textContent='Error al subir: '+r.error;
   P.avatar=r.url;SFX.ok();toast('📷 Foto actualizada');profile();
 }
+function equipFund(){P.equip=P.equip==='fundador'?'':'fundador';save();profile()}
 async function boot(){
   localStorage.removeItem('cr_users');localStorage.removeItem('cr_session');
   await sessionReady;
-  if(sbUser){P=await loadProfile();ME=P.username}
-  intro();
+  if(sbUser){P=await loadProfile();ME=P.username;home()}else intro();
 }
-boot();
+window.addEventListener('load',boot);
