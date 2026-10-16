@@ -75,10 +75,13 @@ function auth(){
   <p id="ae" style="color:#f87171;min-height:22px;margin-top:6px"></p>
   <button class="btn" onclick="doAuth()">${authMode==='login'?'Entrar':'Registrarme'}</button>
   <button class="gbtn" onclick="signGoogle()">${GOOGLE_G}<span>Continuar con Google</span></button>
+  <button class="abtn" onclick="signApple()">${APPLE_L}<span>Continuar con Apple</span></button>
   <button class="btn alt" onclick="authMode=authMode==='login'?'reg':'login';auth()">${authMode==='login'?'No tengo cuenta':'Ya tengo cuenta'}</button>
   <button class="btn alt" onclick="intro()">← Volver a la portada</button></div>`;
 }
+let FAILS=0;
 async function doAuth(){
+  if(FAILS>=5&&!cool('login',30000))return $('ae').textContent='Demasiados intentos. Espera 30 segundos.';
   const e=$('ue').value.trim(),p=$('up').value,u=authMode==='reg'?$('un').value.trim():'';
   const err=m=>$('ae').textContent=m;
   if(authMode==='reg'&&!/^\w{3,16}$/.test(u))return err('Usuario: 3-16 letras, números o _');
@@ -86,7 +89,8 @@ async function doAuth(){
   if(p.length<6)return err('La contraseña debe tener al menos 6 caracteres');
   err('Procesando...');
   const r=authMode==='reg'?await signUp(e,p,u):await signIn(e,p);
-  if(r.error)return err(r.error);
+  if(r.error){FAILS++;return err(r.error)}
+  FAILS=0;
   if(r.needsConfirm)return err('Revisa tu correo para confirmar la cuenta y luego entra.');
   P=await loadProfile();ME=P.username;home();
 }
@@ -238,19 +242,20 @@ async function ranking(){
     return;
   }
   app.innerHTML=`<div class="card pop"><p class="tag">RANKING GLOBAL</p><h2 class="q">Clasificación</h2>
-  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${u.username}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
+  ${arr.map((u,i)=>`<div class="rk ${u.username===ME?'me':''}"><b>#${i+1}</b>${avatarHTML(u.avatar_url,32,u.username)}<span>${esc(u.username)}</span><span>Nv ${lvl(u.xp).l} · ${u.xp} XP · 🏅${u.badges_n}</span></div>`).join('')||'<p>Aún no hay usuarios.</p>'}
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
+const APPLE_L=`<svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M16.37 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 6.9 1.2 9.1.8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .8c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.2-2.6 0 0-2.4-.9-2.4-3.6zM14.1 5.7c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9.9 0 2.1-.6 2.7-1.4z"/></svg>`;
 const GOOGLE_G=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7-10 7-17.5z"/><path fill="#FBBC05" d="M10.4 28.8c-.5-1.5-.8-3-.8-4.8s.3-3.3.8-4.8l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.2-13.6-9.9l-7.8 6C6.5 42.6 14.6 48 24 48z"/></svg>`;
 function avatarHTML(url,size=72,name=''){
-  const st=`width:${size}px;height:${size}px`;
-  return url?`<img src="${url}" class="av" style="${st}" alt="">`:`<div class="av ph" style="${st}">${(name||'?')[0].toUpperCase()}</div>`;
+  const st=`width:${size}px;height:${size}px`,u=safeUrl(url);
+  return u?`<img src="${u}" class="av" style="${st}" alt="" referrerpolicy="no-referrer">`:`<div class="av ph" style="${st}">${esc((name||'?')[0].toUpperCase())}</div>`;
 }
 function profile(){
   const L=lvl(P.xp);
   app.innerHTML=`<div class="card pop center">
     <div class="frame-${P.equip||'none'}">${avatarHTML(P.avatar,96,P.username)}</div>
-    <h2 class="q" style="margin:12px 0 4px">${P.username}</h2>
+    <h2 class="q" style="margin:12px 0 4px">${esc(P.username)}</h2>
     <p class="txt" style="margin:4px 0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
     <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
     <div class="edit"><input id="nn" class="inp" maxlength="16" placeholder="Nuevo nombre de usuario"><button class="btn" onclick="renameUser()">Guardar nombre</button></div>
@@ -260,6 +265,7 @@ function profile(){
     <button class="btn" onclick="home()">Volver</button><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 async function renameUser(){
+  if(!cool('rename',10000))return $('pe').textContent='Espera unos segundos antes de cambiarlo otra vez';
   const n=$('nn').value.trim();
   if(!/^\w{3,16}$/.test(n))return $('pe').textContent='Usa de 3 a 16 letras, números o _';
   $('pe').textContent='Guardando...';
@@ -268,13 +274,17 @@ async function renameUser(){
   P.username=n;ME=n;SFX.ok();toast('✅ Nombre actualizado');profile();
 }
 async function changePhoto(inp){
-  const f=inp.files[0];if(!f)return;
+  const f=inp.files[0];
+  const bad=validImage(f);
+  if(bad)return $('pe').textContent=bad;
+  if(!cool('photo',15000))return $('pe').textContent='Espera unos segundos antes de subir otra foto';
   $('pe').textContent='Subiendo foto...';
   const r=await uploadAvatar(f);
   if(r.error)return $('pe').textContent='Error al subir: '+r.error;
   P.avatar=r.url;SFX.ok();toast('📷 Foto actualizada');profile();
 }
 async function boot(){
+  localStorage.removeItem('cr_users');localStorage.removeItem('cr_session');
   await sessionReady;
   if(sbUser){P=await loadProfile();ME=P.username}
   intro();

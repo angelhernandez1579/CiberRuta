@@ -3,6 +3,21 @@ const SUPA_URL="https://nngiwwbovpxfltootjsg.supabase.co";
 const SUPA_KEY="sb_publishable_FNaIKQRJiTsbW98P-dOYlw_K5SIiptd";
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 let sbUser=null;
+// ===== Seguridad (cliente): validación, escape y límites. La protección real está en SQL/RLS. =====
+const SAFE_AVATAR=SUPA_URL+"/storage/v1/object/public/avatares/";
+const MAX_IMG_BYTES=2*1024*1024;
+const IMG_TYPES=["image/jpeg","image/png","image/webp"];
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function safeUrl(u){return typeof u==="string"&&u.startsWith(SAFE_AVATAR)&&u.length<300&&!/["'<>\s]/.test(u)?u:null}
+function validImage(f){
+  if(!f)return"No se seleccionó archivo";
+  if(!IMG_TYPES.includes(f.type))return"Solo se permiten imágenes JPG, PNG o WebP";
+  if(f.size>MAX_IMG_BYTES)return"La imagen supera 2 MB";
+  return null;
+}
+const COOL={};
+function cool(k,ms){const n=Date.now();if(COOL[k]&&n-COOL[k]<ms)return false;COOL[k]=n;return true}
+let rankCache={t:0,d:null};
 const sessionReady=sb.auth.getSession().then(({data})=>{sbUser=data.session?.user||null;return sbUser});
 sb.auth.onAuthStateChange((_e,s)=>{sbUser=s?.user||null});
 
@@ -36,6 +51,9 @@ async function signIn(email,password){
 function signGoogle(){
   sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:"https://angelhernandez1579.github.io/CiberRuta/"}});
 }
+function signApple(){
+  sb.auth.signInWithOAuth({provider:"apple",options:{redirectTo:"https://angelhernandez1579.github.io/CiberRuta/"}});
+}
 async function signOut(){await sb.auth.signOut();sbUser=null}
 function traduce(m){
   if(/Invalid login/i.test(m))return"Correo o contraseña incorrectos";
@@ -52,11 +70,14 @@ async function saveNow(){
   await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag}});
 }
 async function fetchRanking(){
+  if(rankCache.d&&Date.now()-rankCache.t<60000)return rankCache.d;
   await sessionReady;
   const q=sb.from("perfiles").select("username,xp,badges_n,avatar_url").order("xp",{ascending:false}).limit(50)
     .then(({data,error})=>({data:data||[],error:error?error.message:null}));
   const t=new Promise(r=>setTimeout(()=>r({data:null,error:"La consulta no respondió en 8 segundos. Revisa la conexión y recarga la página."}),8000));
-  return Promise.race([q,t]);
+  const res=await Promise.race([q,t]);
+  if(!res.error)rankCache={t:Date.now(),d:res};
+  return res;
 }
 
 async function updateUsername(name){
