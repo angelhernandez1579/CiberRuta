@@ -80,15 +80,10 @@ function mapa(){
   frame();
 }
 
-// ---- Noticias del día (edita este bloque cada día) ----
-const NEWS={fecha:"Actualiza la fecha",items:[
-{t:"Reemplaza este texto con la noticia de ciberseguridad del día.",f:"Fuente oficial",u:"https://www.gob.mx"},
-{t:"Agrega aquí una noticia sobre campañas de phishing recientes.",f:"Fuente oficial",u:"https://www.gob.mx"},
-{t:"Agrega una tercera noticia sobre protección de datos personales.",f:"Fuente oficial",u:"https://www.gob.mx"}]};
 function noticias(){
   app.innerHTML=`<div class="card pop"><p class="tag">NOTICIAS · ${NEWS.fecha}</p><h2 class="q">Ciberseguridad hoy</h2>
-  ${NEWS.items.map((n,i)=>`<div class="nw" style="animation-delay:${i*.15}s"><p>${n.t}</p><small>${n.f} · <a href="${n.u}" target="_blank" rel="noopener">Leer</a></small></div>`).join('')}
-  <p class="tag" style="margin-top:12px">Las noticias se actualizan manualmente desde news en modulos.js.</p>
+  ${NEWS.items.map((n,i)=>`<div class="nw" style="animation-delay:${i*.15}s"><p>${n.t}</p><small>${n.d} · ${n.f} · <a href="${n.u}" target="_blank" rel="noopener">Leer</a></small></div>`).join('')}
+  <p class="tag" style="margin-top:12px">Fuentes: RSS de INCIBE y MuySeguridad. Se actualiza editando news.js.</p>
   <button class="btn alt" onclick="home()">Volver</button></div>`;
 }
 
