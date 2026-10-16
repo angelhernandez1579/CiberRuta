@@ -135,11 +135,14 @@ main{padding-bottom:110px}
 .hgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
 .hgrid button{background:#0f172a;border:0;border-bottom:4px solid #334155;border-radius:16px;padding:20px 8px;color:#e2e8f0;cursor:pointer;font-weight:700;animation:pop .4s both}
 .hgrid i{display:block;font-style:normal;font-size:2rem;margin-bottom:6px}
+#back{display:none;background:#334155;border:0;color:#fff;padding:7px 12px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 3px 0 #1e293b}
+#back:active{transform:translateY(2px)}
 </style>
 </head>
 <body>
 <header>
   <span class="logo" onclick="enter()" id="logo"></span>
+  <button id="back" onclick="home()">← Ruta</button>
   <div class="stats"><span>⚡<b id="xp">0</b></span><span>🪙<b id="coins">0</b></span><span>🔥<b id="sk">0</b></span><button id="mute" onclick="tgl()" title="Sonido">🔊</button></div>
 </header>
 <main id="app"></main>

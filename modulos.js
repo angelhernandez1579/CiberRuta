@@ -106,7 +106,12 @@ function emergencia(){
 
 // ---- Navegación inferior y ruta ----
 function go(el,f){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b===el));f()}
-new MutationObserver(()=>{$('nav').style.display=(P&&app.querySelector('.banner'))?'flex':'none'}).observe(app,{childList:true});
+function syncChrome(){
+  const isHome=!!app.querySelector('.banner'),isIntro=!!app.querySelector('.hero');
+  $('nav').style.display=(P&&isHome)?'flex':'none';
+  $('back').style.display=(P&&!isHome&&!isIntro)?'block':'none';
+}
+new MutationObserver(syncChrome).observe(app,{childList:true});
 function home(){
   if(!P)return auth();
   const today=new Date().toDateString();

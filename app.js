@@ -45,7 +45,7 @@ function enter(){P?home():auth()}
 function intro(){
   app.innerHTML=`<section class="hero"><div class="float">${MASC(150)}</div>
   <h1>CiberRuta</h1><p class="sub">Aprende a protegerte en el mundo digital, jugando.</p>
-  <button class="btn" onclick="enter()">Empezar ▶</button>
+  <button class="btn" id="start">Empezar ▶</button>
   <button class="btn alt" onclick="document.getElementById('que').scrollIntoView({behavior:'smooth'})">Conocer el proyecto</button></section>
   <section id="que" class="rv"><h2>¿Qué es CiberRuta?</h2><p>CiberRuta es una plataforma educativa gratuita para enseñar seguridad digital y ciberseguridad a cualquier persona. Combina teoría breve, casos reales, práctica interactiva y recompensas, para que aprender sobre contraseñas, phishing o privacidad sea tan natural como un juego.</p></section>
   <section class="rv"><h2>El problema</h2><p>Millones de personas usan internet sin herramientas básicas para protegerse: reutilizan contraseñas, caen en mensajes fraudulentos y comparten datos sin pensar. El factor humano participa en gran parte de las brechas de seguridad, y el riesgo es mayor para quienes no tuvieron acceso a formación técnica.</p></section>
@@ -62,6 +62,7 @@ function intro(){
   <div><b>Legal & contacto</b><a href="#">Aviso de Privacidad</a><a href="#">Términos de Servicio</a><a href="mailto:contacto@ciberruta.example">contacto@ciberruta.example</a></div></div></footer>`;
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
   document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  $('start').addEventListener('click',()=>{window.scrollTo(0,0);P?home():auth()});
   window.scrollTo(0,0);
 }
 
