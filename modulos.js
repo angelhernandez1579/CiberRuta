@@ -146,7 +146,7 @@ function hub(){
 }
 
 // ---- Pie de página (también en la ruta) ----
-const APP_VERSION="1.1.4";
+const APP_VERSION="1.1.5";
 function footerHTML(){
   return `<footer class="ft"><p class="tag">Democratizando la educación en ciberseguridad mediante juegos, comunidad y buenas prácticas, alineados a los Objetivos de Desarrollo Sostenible de la ONU.</p>
   <div class="fcols"><div><b>Legal & contacto</b><a href="privacidad.html">Aviso de Privacidad</a><a href="terminos.html">Términos de Servicio</a><a href="contacto.html">Contacto</a><a href="mailto:angel.hernandez1579@alumnos.udg.mx">angel.hernandez1579@alumnos.udg.mx</a></div></div><p class="ver">CiberRuta v${APP_VERSION}</p></footer>`;

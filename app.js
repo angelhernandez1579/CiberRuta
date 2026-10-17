@@ -1,4 +1,11 @@
 const $=id=>document.getElementById(id), app=$('app');
+// Baraja las opciones de una pregunta para que la respuesta correcta no siempre quede en la misma posición
+function shuffleQ(q){
+  const idx=q[1].map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[idx[i],idx[j]]=[idx[j],idx[i]]}
+  return [q[0],idx.map(k=>q[1][k]),idx.indexOf(q[2]),q[3]];
+}
+let QS=null;
 const DB=()=>JSON.parse(localStorage.getItem('cr_users')||'{}');
 const putDB=d=>localStorage.setItem('cr_users',JSON.stringify(d));
 let ME=null,P=null;
@@ -122,12 +129,12 @@ function showPg(){
 }
 function startQ(){qi=0;correct=0;ask()}
 function ask(){
-  const q=cur.q[qi];
+  const q=QS=shuffleQ(cur.q[qi]);
   app.innerHTML=`<div class="top"><button class="x" onclick="home()">✕</button><div class="bar"><div style="width:${qi/cur.q.length*100}%"></div></div><span>${qi+1}/${cur.q.length}</span></div>
   <div class="card slide"><h2 class="q">${q[0]}</h2>${q[1].map((o,i)=>`<button class="opt" onclick="answer(${i})">${o}</button>`).join('')}</div><div id="fb"></div>`;
 }
 function answer(i){
-  const q=cur.q[qi],ok=i===q[2];
+  const q=QS,ok=i===q[2];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('good');else if(j===i)b.classList.add('bad')});
   if(ok){correct++;SFX.ok()}else{SFX.bad();document.querySelector('.card').classList.add('shake')}if(!ok)addReview(cur.id,qi);MOOD=ok?'happy':'sad';
   $('fb').innerHTML=`<div class="fb ${ok?'okb':'badb'}"><div class="fbm">${MASC(64,'bob',ok?'happy':'sad')}</div><b>${ok?'¡Correcto! ✅':'Incorrecto ❌'}</b><p style="margin:6px 0 4px">${q[3]}</p><button class="btn" onclick="next()">Continuar</button></div>`;

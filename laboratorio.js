@@ -28,7 +28,7 @@ function labSiguiente(){
   LAB.m=labMail();
   app.innerHTML=`<div class="card pop"><div class="hrow"><p class="tag">CORREO ${LAB.n+1} · ${LAB.ok} acertados</p></div>
   <div class="mail"><p><b>De:</b> ${esc(LAB.m.from)}</p><p><b>Asunto:</b> ${esc(LAB.m.subj)}</p><p>${esc(LAB.m.body)}</p></div>
-  <div class="grid2"><button class="btn" onclick="labDecidir(false)">Legítimo</button><button class="btn danger" onclick="labDecidir(true)">Phishing</button></div>
+  <div class="grid2">${Math.random()<.5?'<button class="btn" onclick="labDecidir(false)">Legítimo</button><button class="btn danger" onclick="labDecidir(true)">Phishing</button>':'<button class="btn danger" onclick="labDecidir(true)">Phishing</button><button class="btn" onclick="labDecidir(false)">Legítimo</button>'}</div>
   <div id="labfb"></div>
   <button class="btn alt" onclick="laboratorio()">Terminar práctica</button></div>`;
 }

@@ -19,6 +19,7 @@ const RED_SIGNS=["Urgencia para actuar hoy","Enlace que no coincide con la marca
 const OK_SIGNS=["Remitente con el dominio oficial de la empresa","Te invita a revisar tu cuenta en la app oficial","Número de pedido que tú realizaste"];
 const SIGNS2=[...RED_SIGNS,...OK_SIGNS];
 const CASO={pistas:["Un correo dice 'Factura pendiente' desde facturacion@empresa-pagos.co","Adjunta un archivo llamado factura.pdf.exe","Pide responder en 10 minutos"],ops:["Lo abro para ver la factura","No lo abro: verifico la factura con la empresa por su canal oficial y reporto el correo","Lo reenvío a un colega"],ok:1};
+let CASO_ORD=[0,1,2];
 const CHK=["Contraseña larga y única para esta cuenta","Autenticación en dos pasos activada","Correo de recuperación que controlo","Sesiones revisadas y dispositivos desconocidos cerrados"];
 const MISIONES=[
 {id:'sig',t:'Encuentra 3 señales de estafa',d:'Marca solo las tres señales de alerta. (2 min)'},
@@ -75,9 +76,10 @@ function runM(id){
     <div id="fb"></div><button class="btn alt" onclick="misiones()">Volver a misiones</button></div>`;
   }
   if(id==='case'){
+    CASO_ORD=CASO.ops.map((_,i)=>i).sort(()=>Math.random()-.5);
     app.innerHTML=`<div class="card pop"><p class="tag">MISIÓN · CASO</p><h2 class="q">Pistas</h2>
     <div class="mail">${CASO.pistas.map(p=>`<p>• ${p}</p>`).join('')}</div><p class="txt">¿Qué haces con el archivo?</p>
-    ${CASO.ops.map((o,i)=>`<button class="opt" onclick="caseAns(${i})">${o}</button>`).join('')}<div id="fb"></div></div>`;
+    ${CASO_ORD.map((k,pos)=>`<button class="opt" onclick="caseAns(${pos})">${CASO.ops[k]}</button>`).join('')}<div id="fb"></div></div>`;
   }
 }
 function chkSig(){
@@ -90,8 +92,8 @@ function chkAll(){
   if(CHK.every((_,i)=>$('c'+i).checked)){markDaily('chk');$('fb').innerHTML='<div class="mail"><b>✅ Cuenta configurada de forma segura</b></div><button class="btn alt" onclick="misiones()">Volver a misiones</button>';SFX.ok()}
 }
 function caseAns(i){
-  const ok=i===CASO.ok;
-  document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===CASO.ok)b.classList.add('good');else if(j===i)b.classList.add('bad')});
+  const ok=CASO_ORD[i]===CASO.ok;
+  document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===CASO_ORD.indexOf(CASO.ok))b.classList.add('good');else if(j===i)b.classList.add('bad')});
   if(ok)markDaily('case');
   $('fb').innerHTML=`<div class="mail"><b>${ok?'✅ Buena decisión':'❌ Esa decisión te expone'}</b><p>Un archivo ejecutable con nombre de documento es señal de malware, y la presión de tiempo busca que actúes sin pensar.</p></div><button class="btn alt" onclick="misiones()">Volver a misiones</button>`;
   SFX[ok?'ok':'bad']();
@@ -182,7 +184,7 @@ let FT=null;
 function runFinal(ri){
   const r=RAMAS[ri],pool=[];
   r.units.forEach(ui=>U[ui].L.forEach(l=>l.q.forEach(q=>pool.push(q))));
-  FT={r,qs:pool.sort(()=>Math.random()-.5).slice(0,3),i:0,ok:0};ftShow();
+  FT={r,qs:pool.sort(()=>Math.random()-.5).slice(0,3).map(shuffleQ),i:0,ok:0};ftShow();
 }
 function ftShow(){
   const q=FT.qs[FT.i];
@@ -248,7 +250,7 @@ let RV=null;
 function rvNext(){
   const x=dueRv()[0];if(!x)return repaso();
   const [ui,li]=x.id.split('.').map(Number),q=U[ui].L[li].q[x.qi];
-  RV={x,q};
+  RV={x,q:shuffleQ(q)};
   app.innerHTML=`<div class="card pop"><p class="tag">REPASO · ${U[ui].L[li].t}</p><h2 class="q">${q[0]}</h2>
   ${q[1].map((o,i)=>`<button class="opt" onclick="rvAns(${i})">${o}</button>`).join('')}<div id="fb"></div></div>`;
 }
