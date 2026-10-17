@@ -272,17 +272,24 @@ function profile(){
     <div class="frame-${P.equip||'none'}${P.acc&&P.equip!=='fundador'?' acc-'+P.acc:''}">${avatarBadge(avatarHTML(P.avatar,96,P.username),P.streak)}</div>
     <h2 class="q" style="margin:12px 0 4px">${esc(P.username)}</h2>
     <p class="txt" style="margin:4px 0">Nivel ${L.l} · ${L.title}<br>${P.xp} XP · 🪙 ${P.coins} · 🔥 ${P.streak} días</p>
-    <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
-    <div class="edit"><input id="nn" class="inp" maxlength="16" placeholder="Nuevo nombre de usuario"><button class="btn" onclick="renameUser()">Guardar nombre</button></div>
-    <p id="pe" class="tag" style="min-height:20px"></p>
-    <h3 style="margin:14px 0 8px;text-align:left">Logros</h3><div class="badges">
-    ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
-    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<h3 class="sub2" style="margin-top:14px">Mis datos</h3><button class="btn alt" onclick="exportarDatos()">📥 Descargar mis datos</button><div class="edit"><input id="elim" class="inp" placeholder="Escribe tu usuario para eliminar la cuenta"><button class="btn danger" onclick="eliminarCuenta()">🗑️ Eliminar mi cuenta</button></div><h3 class="sub2">Tus datos</h3>
-    <button class="btn alt" onclick="descargarDatos()">📦 Descargar mis datos</button>
-    <h3 class="sub2">Eliminar cuenta</h3>
-    <p class="tag" style="text-transform:none;letter-spacing:0">Se borran tu perfil, progreso, publicaciones, toques y foto. No se puede deshacer.</p>
-    <div class="edit"><input id="delc" class="inp" placeholder="Escribe tu nombre de usuario"><button class="btn danger" onclick="eliminarCuenta()">Eliminar mi cuenta</button></div>
-    <p id="pe2" class="tag" style="min-height:20px"></p>
+    ${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}
+    <div class="sec"><h3>Perfil</h3>
+      <label class="btn alt" style="cursor:pointer">📷 Cambiar foto<input type="file" accept="image/*" onchange="changePhoto(this)" hidden></label>
+      <div class="edit"><input id="nn" class="inp" maxlength="16" placeholder="Nuevo nombre de usuario"><button class="btn" onclick="renameUser()">Guardar nombre</button></div>
+      <p id="pe" class="tag" style="min-height:20px"></p>
+    </div>
+    <div class="sec"><h3>Logros</h3><div class="badges">
+      ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
+    </div>
+    <div class="sec"><h3>Tus datos</h3>
+      <button class="btn alt" onclick="descargarDatos()">📦 Descargar mis datos</button>
+    </div>
+    <div class="sec danger-zone"><h3>Eliminar cuenta</h3>
+      <p class="tag" style="text-transform:none;letter-spacing:0">Se borran tu perfil, progreso, publicaciones, toques y foto. No se puede deshacer.</p>
+      <div class="edit"><input id="delc" class="inp" placeholder="Escribe tu nombre de usuario"><button class="btn danger" onclick="eliminarCuenta()">Eliminar mi cuenta</button></div>
+      <p id="pe2" class="tag" style="min-height:20px"></p>
+    </div>
+    <button class="btn" onclick="home()">Volver</button>
     <button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 async function renameUser(){

@@ -21,7 +21,7 @@ let rankCache={t:0,d:null};
 const sessionReady=sb.auth.getSession().then(({data})=>{sbUser=data.session?.user||null;return sbUser});
 sb.auth.onAuthStateChange((_e,s)=>{sbUser=s?.user||null});
 
-function newP(username){return{username,xp:0,coins:0,streak:0,day:"",bonusDay:"",done:[],badges:[],guides:{},phishOK:0,genCount:0,sims:[],review:[],daily:{day:"",done:[]},inv:{},equip:"",dxUntil:0,freeze:0,diag:null,acc:"",cofres:[],lab:[]}}
+function newP(username){return{username,xp:0,coins:0,streak:0,day:"",bonusDay:"",done:[],badges:[],guides:{},phishOK:0,genCount:0,sims:[],review:[],daily:{day:"",done:[]},inv:{},equip:"",dxUntil:0,freeze:0,diag:null,acc:"",cofres:[],lab:[],labHoy:null}}
 async function loadProfile(){
   const {data:borrada}=await sb.from("cuentas_eliminadas").select("id").eq("id",sbUser.id).maybeSingle();
   if(borrada)return{eliminada:true};
@@ -66,7 +66,7 @@ function queueSave(){clearTimeout(saveT);saveT=setTimeout(saveNow,800)}
 async function saveNow(){
   if(!sbUser||!P)return;
   await sb.from("perfiles").upsert({id:sbUser.id,username:P.username,xp:P.xp,coins:P.coins,streak:P.streak,badges_n:P.badges.length,updated_at:new Date().toISOString()});
-  await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag,acc:P.acc,cofres:P.cofres,lab:P.lab}});
+  await sb.from("progreso").upsert({id:sbUser.id,data:{done:P.done,badges:P.badges,guides:P.guides,day:P.day,bonusDay:P.bonusDay,phishOK:P.phishOK,genCount:P.genCount,sims:P.sims,review:P.review,daily:P.daily,inv:P.inv,equip:P.equip,dxUntil:P.dxUntil,freeze:P.freeze,diag:P.diag,acc:P.acc,cofres:P.cofres,lab:P.lab,labHoy:P.labHoy}});
 }
 async function fetchRanking(){
   if(rankCache.d&&Date.now()-rankCache.t<60000)return rankCache.d;
