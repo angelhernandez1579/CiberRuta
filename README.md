@@ -2,7 +2,7 @@
 
 **Aprende ciberseguridad jugando.** CiberRuta es una aplicación web educativa, pensada para celular, que enseña seguridad digital a personas sin formación técnica: contraseñas, phishing, privacidad, redes, dispositivos y respuesta a incidentes, con lecciones cortas, simulacros, misiones y un sistema de progreso.
 
-- **Versión:** 1.1.5
+- **Versión:** 1.1.6
 - **Autor:** Angel Abraham Hernandez Aguilar
 - **Institución:** CUGDL
 - **Fecha:** 16 de octubre de 2026
