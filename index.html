@@ -311,6 +311,71 @@ main,header{position:relative;z-index:1}
 .acc-escudo::before{content:"🛡️"}
 .acc-rayo::before{content:"⚡"}
 .ver{text-align:center;color:#64748b;font-size:.75rem;margin-top:14px;font-variant-numeric:tabular-nums}
+
+/* ===== Versión premium 1.1.3: jerarquía, profundidad y movimiento sobrio ===== */
+:root{
+  --bg:#0b1020;--surface:#131b2e;--surface-2:#1a2440;--line:rgba(148,163,184,.14);
+  --text:#e6edf7;--muted:#94a3b8;--brand:#4ade80;--sky:#38bdf8;
+  --radius-lg:22px;--radius-md:16px;--shadow-1:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -20px rgba(2,6,23,.8);
+  --space-1:8px;--space-2:12px;--space-3:16px;--space-4:24px;
+}
+body{background:radial-gradient(1200px 600px at 50% -200px,rgba(56,189,248,.12),transparent 60%),radial-gradient(800px 500px at 100% 100%,rgba(74,222,128,.08),transparent 60%),var(--bg);color:var(--text);font-feature-settings:"ss01","cv11"}
+header{background:rgba(11,16,32,.72);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--line)}
+.logo{background:linear-gradient(135deg,#4ade80,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo svg{filter:drop-shadow(0 4px 12px rgba(74,222,128,.25))}
+.stats span{background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:999px;font-size:.82rem}
+main{padding-top:var(--space-4)}
+.card{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-bottom:none;box-shadow:var(--shadow-1);border-radius:var(--radius-lg);padding:var(--space-4)}
+.hero{padding:40px 0 16px}
+.hero h1{font-size:2.6rem;background:linear-gradient(135deg,#f8fafc 0%,#4ade80 55%,#38bdf8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em}
+.sub{font-size:1.05rem;color:var(--muted);max-width:34ch;margin-left:auto;margin-right:auto}
+.rv{margin:44px 0}
+.rv h2{font-size:1.5rem;color:var(--text);letter-spacing:-.02em}
+.rv h2::after{content:"";display:block;width:36px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--brand),var(--sky));margin-top:8px}
+.feat{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-left:none;box-shadow:var(--shadow-1);border-radius:var(--radius-md);padding:var(--space-3)}
+.feat .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(74,222,128,.12);flex:none}
+.ods{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)}
+.ods b{color:#fde68a}
+.btn{border-radius:16px;letter-spacing:.01em;background:linear-gradient(180deg,#4ade80,#22c55e);box-shadow:0 6px 0 #15803d,0 14px 28px -12px rgba(34,197,94,.55)}
+.btn.alt{background:linear-gradient(180deg,#334155,#263247);box-shadow:0 6px 0 #1b2638,0 14px 28px -14px rgba(2,6,23,.8)}
+.btn.danger{background:linear-gradient(180deg,#ef4444,#dc2626);box-shadow:0 6px 0 #991b1b}
+.node{background:linear-gradient(180deg,#4ade80,#22c55e);box-shadow:0 6px 0 #15803d,0 0 0 6px rgba(74,222,128,.08)}
+.node.done{background:linear-gradient(180deg,#fde68a,#facc15);box-shadow:0 6px 0 #a16207,0 0 0 6px rgba(250,204,21,.08)}
+.node.lock{background:linear-gradient(180deg,#475569,#334155);box-shadow:0 6px 0 #1e293b}
+.node.cur{box-shadow:0 6px 0 #15803d,0 0 0 8px rgba(74,222,128,.16),0 0 28px rgba(74,222,128,.35)}
+.banner{background:linear-gradient(120deg,#38bdf8,#2563eb);box-shadow:0 6px 0 #1d4ed8,0 20px 40px -18px rgba(37,99,235,.8);border-radius:var(--radius-md)}
+.mod{background:linear-gradient(120deg,var(--c),color-mix(in srgb,var(--c) 55%,#0b1020));border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 30px -16px var(--c);border-radius:var(--radius-md)}
+.bar{background:rgba(148,163,184,.14);height:12px}
+.bar div{background:linear-gradient(90deg,#4ade80,#38bdf8);box-shadow:0 0 14px rgba(74,222,128,.45)}
+.gcard,.rk,.post,.mail,.rama{border:1px solid var(--line);background:var(--surface)}
+.gcard{border-radius:var(--radius-md);transition:transform .2s var(--ease-out),border-color .2s ease,background-color .2s ease}
+.gcard:active{transform:scale(.98)}
+.tools button,.hgrid button{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-bottom:3px solid #0b1020;box-shadow:var(--shadow-1)}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md)}
+#nav{background:rgba(11,16,32,.8);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);border-top:1px solid var(--line)}
+#nav button.on{background:linear-gradient(180deg,rgba(56,189,248,.18),rgba(56,189,248,.06));color:var(--sky);box-shadow:inset 0 0 0 1px rgba(56,189,248,.25)}
+#nav button.on i{filter:drop-shadow(0 0 8px rgba(56,189,248,.5))}
+#back2{background:rgba(19,27,46,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);box-shadow:none;color:var(--text)}
+.toast{background:linear-gradient(180deg,#fde68a,#facc15);box-shadow:0 14px 30px -12px rgba(250,204,21,.6),0 6px 0 #a16207}
+.sk{background:linear-gradient(90deg,var(--surface) 0%,#243251 50%,var(--surface) 100%);background-size:200% 100%;border-radius:var(--radius-md)}
+.av{box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+.frame-fundador .av{box-shadow:0 0 0 3px #f5c542,0 0 24px rgba(245,197,66,.35)}
+.fire{background:linear-gradient(180deg,#fb923c,#ea580c)}
+.ft{border-top:1px solid var(--line)}
+.fcols a{color:var(--muted);transition:color .2s ease}
+.fcols a:hover{color:var(--text)}
+/* Entrada escalonada de bloques al cambiar de pantalla */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#app>.card,#app>.unit,#app>.mod,#app>.banner,#app>section,#app>.hero{animation:rise .5s var(--ease-out) both}
+#app>*:nth-child(2){animation-delay:.04s}
+#app>*:nth-child(3){animation-delay:.08s}
+#app>*:nth-child(4){animation-delay:.12s}
+#app>*:nth-child(5){animation-delay:.16s}
+#app>*:nth-child(n+6){animation-delay:.2s}
+.path .pn{animation:rise .45s var(--ease-out) both}
+.path .pn:nth-child(2){animation-delay:.05s}.path .pn:nth-child(3){animation-delay:.1s}.path .pn:nth-child(4){animation-delay:.15s}.path .pn:nth-child(5){animation-delay:.2s}
+.mas{animation:rise .5s var(--ease-out) both}
+@media (prefers-reduced-motion:reduce){#app>*,.path .pn,.mas{animation:none!important}}
 </style>
 </head>
 <body>
