@@ -131,7 +131,7 @@ ciberruta/
 - **Sin Content Security Policy:** GitHub Pages no permite cabeceras de seguridad, y una política estricta exigiría reorganizar el código para eliminar los scripts incrustados en el HTML.
 - **Laboratorio:** solo existe el de phishing. Los de enlaces, ingeniería social, respuesta a incidentes, contraseñas y privacidad están planeados.
 
-## 11. Trabajo futuro
+## 9. Trabajo futuro
 
 1. Laboratorios de análisis de enlaces, ingeniería social y respuesta a incidentes.
 2. Casos narrativos con decisiones ramificadas.
@@ -140,10 +140,10 @@ ciberruta/
 5. Automatización de las noticias y pruebas de extremo a extremo.
 6. Versión nativa para Android mediante una Trusted Web Activity.
 
-## 12. Aviso de privacidad
+## 10. Aviso de privacidad
 
 CiberRuta trata los datos mínimos necesarios para funcionar: correo, nombre de usuario, foto opcional y progreso educativo. No vende datos ni muestra publicidad. El detalle completo está en [privacidad.html](privacidad.html), y las reglas de uso en [terminos.html](terminos.html).
 
-## 13. Licencia
+## 11. Licencia
 
 Proyecto académico. Las noticias enlazan a sus fuentes originales (INCIBE y MuySeguridad), cuyos derechos corresponden a sus autores.
