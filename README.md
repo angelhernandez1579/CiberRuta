@@ -122,34 +122,7 @@ ciberruta/
 └── *.sql               Esquema y políticas de la base de datos
 ```
 
-## 8. Instalación y configuración
-
-**Requisitos:** una cuenta gratuita de Supabase, una cuenta de GitHub y un navegador moderno.
-
-1. **Crear el proyecto en Supabase** y copiar la URL y la clave publicable en la constante `SUPA_URL` y `SUPA_KEY` de `supa.js`.
-2. **Ejecutar los scripts SQL en este orden** desde el SQL Editor:
-   1. `00_base.sql`: tablas, políticas y bucket de fotos.
-   2. `seguridad.sql`: límites de datos y disparador anti-trampas.
-   3. `admin.sql`: columnas y reglas de administración.
-   4. `nombres.sql`: nombres únicos y reservados.
-   5. `admin2.sql`: suspensiones, registro de actividad y políticas de administración.
-   6. `community.sql`: comunidad, reportes, toques y filtro de lenguaje.
-   7. `cuenta.sql`: eliminación de cuenta.
-3. **Hacerse administrador** (una sola vez): en el SQL Editor, ejecutar `update public.perfiles set is_admin = true where username = 'TU_USUARIO';`.
-4. **Configurar Authentication:** en *URL Configuration*, poner la URL del sitio como *Site URL* y como *Redirect URL*. Para Google, activar el proveedor en *Providers* con su Client ID y Client Secret, y registrar la URI de redirección de Supabase en Google Cloud.
-5. **Publicar en GitHub Pages:** subir los archivos al repositorio, activar *Pages* desde la rama principal y abrir la dirección resultante.
-
-Para ejecutar en local basta con abrir `index.html` con un servidor estático (por ejemplo, `python -m http.server`), porque las funciones de Supabase necesitan una dirección http.
-
-## 9. Pruebas realizadas
-
-- Verificación de sintaxis de todos los archivos JavaScript.
-- Verificación automática del contenido: 9 módulos, 35 lecciones, 140 preguntas, sin índices de respuesta fuera de rango.
-- Revisión del código de las reglas de la base de datos y de los flujos de cuenta, progreso y administración.
-
-**Pendiente:** pruebas manuales en navegador y en iPhone/Android (inicio de sesión, progreso, ranking, comunidad y panel de administración), pruebas automatizadas de extremo a extremo y revisión de accesibilidad con lector de pantalla.
-
-## 10. Limitaciones conocidas
+## 8. Limitaciones conocidas
 
 - **Mapa de ataques:** es una simulación. No existe una fuente pública de ataques en tiempo real sin clave de API y sin un servidor propio.
 - **Noticias:** se actualizan manualmente en `news.js`. Automatizarlo requiere un proceso programado.
@@ -157,7 +130,6 @@ Para ejecutar en local basta con abrir `index.html` con un servidor estático (p
 - **XP en el cliente:** el navegador calcula el progreso. El servidor limita los saltos grandes, pero una cuenta determinada podría acumular XP poco a poco. La solución completa requiere funciones de servidor.
 - **Sin Content Security Policy:** GitHub Pages no permite cabeceras de seguridad, y una política estricta exigiría reorganizar el código para eliminar los scripts incrustados en el HTML.
 - **Laboratorio:** solo existe el de phishing. Los de enlaces, ingeniería social, respuesta a incidentes, contraseñas y privacidad están planeados.
-- **Políticas de privacidad y términos:** son plantillas de proyecto escolar y deben revisarse con el profesor antes de usarse como documentos definitivos.
 
 ## 11. Trabajo futuro
 
