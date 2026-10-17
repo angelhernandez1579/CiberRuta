@@ -83,5 +83,6 @@ async function verPerfil(u){
       <div class="mcard2"><small>Racha</small><b>${pf.streak} 🔥</b></div>
     </div>
     ${yo?'':`<button class="btn" onclick="toque('${pf.id}')">👋 Recordar que estudie</button>`}
-    <button class="btn alt" onclick="ranking()">Volver al ranking</button></div>`;
+    <button class="btn alt" onclick="ranking()">Volver al ranking</button>${P.is_admin?'<div id="ad"></div>':''}</div>`;
+  if(P.is_admin)adFicha(pf.username);
 }

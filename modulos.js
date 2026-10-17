@@ -142,11 +142,11 @@ function home(){
 }
 function hub(){
   app.innerHTML=`<div class="card pop"><p class="tag">HERRAMIENTAS</p><h2 class="q">Tu caja de herramientas</h2>
-  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🔗','Enlaces','analizador()'],['📰','Noticias','noticias()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
+  <div class="hgrid">${[['🔍','Verificador','checker()'],['🎲','Generador','generator()'],['🎣','Detector','detector()'],['📘','Guías iPhone','guias()'],['🌍','Mapa','mapa()'],['🆘','Emergencia','emergencia()'],['🎯','Misiones','misiones()'],['🎮','Simulacros','simulacros()'],['🌳','Habilidades','arbol()'],['📋','Diagnóstico','perfil()'],['🔁','Repaso','repaso()'],['🔗','Enlaces','analizador()'],['📰','Noticias','noticias()'],['🧪','Laboratorio','laboratorioPhishing()'],...(P.is_admin?[['🛡️','Admin','admin()']]:[])].map(([i,t,f])=>`<button onclick="${f}"><i>${i}</i>${t}</button>`).join('')}</div></div>`;
 }
 
 // ---- Pie de página (también en la ruta) ----
-const APP_VERSION="1.1.1";
+const APP_VERSION="1.1.2";
 function footerHTML(){
   return `<footer class="ft"><p class="tag">Democratizando la educación en ciberseguridad mediante juegos, comunidad y buenas prácticas, alineados a los Objetivos de Desarrollo Sostenible de la ONU.</p>
   <div class="fcols"><div><b>Legal & contacto</b><a href="privacidad.html">Aviso de Privacidad</a><a href="terminos.html">Términos de Servicio</a><a href="contacto.html">Contacto</a><a href="mailto:angel.hernandez1579@alumnos.udg.mx">angel.hernandez1579@alumnos.udg.mx</a></div></div><p class="ver">CiberRuta v${APP_VERSION}</p></footer>`;
@@ -289,4 +289,31 @@ async function adLog(){
   const {data,error}=await sb.from('admin_log').select('*').order('creado',{ascending:false}).limit(30);
   if(error)return $('ad').innerHTML=`<div class="mail">${esc(error.message)}</div>`;
   $('ad').innerHTML=(data||[]).map(r=>`<div class="rk"><span style="flex:none;font-size:.72rem;color:#94a3b8">${new Date(r.creado).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'})}</span><span>${esc(r.accion)} · <b>${esc(r.objetivo||'')}</b><small class="ttl">${esc(r.detalle||'')}</small></span></div>`).join('')||'<p class="tag">Sin actividad todavía.</p>';
+}
+
+
+// ===== Mis datos: exportar y eliminar la cuenta =====
+async function descargarDatos(){
+  const uid=sbUser.id;
+  const [pf,pr,cm,tq]=await Promise.all([
+    sb.from('perfiles').select('username,xp,coins,streak,badges_n,marco_fundador,suspendido').eq('id',uid).maybeSingle(),
+    sb.from('progreso').select('data').eq('id',uid).maybeSingle(),
+    sb.from('comunidad').select('texto,creado').eq('autor',uid),
+    sb.from('toques').select('creado').eq('de',uid)
+  ]);
+  const datos={exportado:new Date().toISOString(),aplicacion:'CiberRuta v'+APP_VERSION,perfil:pf.data,progreso:pr.data?pr.data.data:null,publicaciones:cm.data||[],toques_enviados:tq.data||[]};
+  const blob=new Blob([JSON.stringify(datos,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='ciberruta-mis-datos.json';
+  document.body.appendChild(a);a.click();a.remove();
+  toast('📦 Archivo de tus datos descargado');
+}
+async function eliminarCuenta(){
+  if(($('delc').value||'').trim()!==P.username)return $('pe2').textContent='Escribe tu nombre de usuario para confirmar';
+  $('pe2').textContent='Eliminando...';
+  const {error}=await sb.rpc('eliminar_mi_cuenta');
+  if(error)return $('pe2').textContent='Error: '+error.message;
+  await signOut();P=null;ME=null;
+  toast('Tu cuenta fue eliminada');
+  intro();
 }

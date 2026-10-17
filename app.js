@@ -94,7 +94,11 @@ async function doAuth(){
   if(r.error){FAILS++;return err(r.error)}
   FAILS=0;
   if(r.needsConfirm)return err('Revisa tu correo para confirmar la cuenta y luego entra.');
-  P=await loadProfile();ME=P.username;if(P.suspendido)return suspendidoMsg();home();
+  P=await loadProfile();if(P.eliminada)return cuentaEliminada();ME=P.username;if(P.suspendido)return suspendidoMsg();home();
+}
+async function cuentaEliminada(){
+  await signOut();P=null;ME=null;auth();
+  $('ae').textContent='Esta cuenta fue eliminada.';
 }
 async function suspendidoMsg(){
   const m=P.motivo||'Incumplimiento de los términos';
@@ -273,7 +277,13 @@ function profile(){
     <p id="pe" class="tag" style="min-height:20px"></p>
     <h3 style="margin:14px 0 8px;text-align:left">Logros</h3><div class="badges">
     ${Object.entries(BADGES).map(([k,[e,n]])=>`<div class="bd ${P.badges.includes(k)?'on':''}">${e}<span>${n}</span></div>`).join('')}</div>
-    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
+    <button class="btn" onclick="home()">Volver</button>${P.marco_fundador?`<button class="btn alt" onclick="equipFund()">${P.equip==='fundador'?'Quitar marco fundador':'⭐ Equipar marco fundador'}</button>`:''}<h3 class="sub2" style="margin-top:14px">Mis datos</h3><button class="btn alt" onclick="exportarDatos()">📥 Descargar mis datos</button><div class="edit"><input id="elim" class="inp" placeholder="Escribe tu usuario para eliminar la cuenta"><button class="btn danger" onclick="eliminarCuenta()">🗑️ Eliminar mi cuenta</button></div><h3 class="sub2">Tus datos</h3>
+    <button class="btn alt" onclick="descargarDatos()">📦 Descargar mis datos</button>
+    <h3 class="sub2">Eliminar cuenta</h3>
+    <p class="tag" style="text-transform:none;letter-spacing:0">Se borran tu perfil, progreso, publicaciones, toques y foto. No se puede deshacer.</p>
+    <div class="edit"><input id="delc" class="inp" placeholder="Escribe tu nombre de usuario"><button class="btn danger" onclick="eliminarCuenta()">Eliminar mi cuenta</button></div>
+    <p id="pe2" class="tag" style="min-height:20px"></p>
+    <button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`;
 }
 async function renameUser(){
   if(!cool('rename',10000))return $('pe').textContent='Espera unos segundos antes de cambiarlo otra vez';
@@ -298,6 +308,6 @@ function equipFund(){P.equip=P.equip==='fundador'?'':'fundador';save();profile()
 async function boot(){
   localStorage.removeItem('cr_users');localStorage.removeItem('cr_session');
   await sessionReady;
-  if(sbUser){P=await loadProfile();ME=P.username;if(P.suspendido)return suspendidoMsg();home()}else intro();
+  if(sbUser){P=await loadProfile();if(P.eliminada)return cuentaEliminada();ME=P.username;if(P.suspendido)return suspendidoMsg();home()}else intro();
 }
 window.addEventListener('load',boot);
